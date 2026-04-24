@@ -6,7 +6,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -38,7 +38,7 @@ api.interceptors.response.use(
     }
 
     if (error.message === 'Network Error' || !error.response) {
-      return Promise.reject(new Error('Network Error. Please ensure the backend is running on port 5001.'));
+      return Promise.reject(new Error('Network Error. Please ensure you are connected to the internet and the server is reachable.'));
     }
 
     const serverMessage =

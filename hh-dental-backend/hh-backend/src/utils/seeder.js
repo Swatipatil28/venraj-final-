@@ -98,11 +98,13 @@ const seed = async () => {
   console.log("🗑   Cleared existing collections.");
 
   // Seed clinics
-  const clinics = await Clinic.insertMany(clinicsData);
+  const clinicsToInsert = clinicsData.map(c => ({...c, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
+  const clinics = await Clinic.insertMany(clinicsToInsert);
   console.log(`✅  ${clinics.length} clinics seeded.`);
 
   // Seed services
-  const services = await Service.insertMany(servicesData);
+  const servicesToInsert = servicesData.map(s => ({...s, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
+  const services = await Service.insertMany(servicesToInsert);
   console.log(`✅  ${services.length} services seeded.`);
 
   // Map clinic names to IDs for doctor assignment
@@ -149,7 +151,8 @@ const seed = async () => {
     },
   ];
 
-  const doctors = await Doctor.insertMany(doctorsData);
+  const doctorsToInsert = doctorsData.map(d => ({...d, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
+  const doctors = await Doctor.insertMany(doctorsToInsert);
   console.log(`✅  ${doctors.length} doctors seeded.`);
 
   // Seed admin user

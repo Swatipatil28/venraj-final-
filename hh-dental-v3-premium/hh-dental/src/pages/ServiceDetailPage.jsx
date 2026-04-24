@@ -13,12 +13,7 @@ export default function ServiceDetailPage() {
 
   const service = data.find((item) => item.id === id);
   const related = data.filter((item) => service?.relatedServiceIds?.includes(item.id)).slice(0, 3);
-  const BASE_URL = "http://localhost:5001";
-  const fallback = "https://via.placeholder.com/400x300?text=No+Image";
-  const rawImage = service?.image || service?.imageUrl || "";
-  const heroImage = rawImage
-    ? (rawImage.startsWith("http") ? rawImage : `${BASE_URL}${rawImage}`)
-    : fallback;
+
 
   if (loading) {
     return (
@@ -44,12 +39,10 @@ export default function ServiceDetailPage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={heroImage}
+            src={service.image || service.imageUrl || "/fallback.jpg"}
             alt={service.title}
             className="h-[72vh] min-h-[520px] w-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = fallback;
-            }}
+            onError={(e) => { e.target.src = "/fallback.jpg"; }}
           />
           <div className="hero-overlay absolute inset-0" />
         </div>

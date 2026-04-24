@@ -50,7 +50,7 @@ npm start
 
 ### Base URL
 ```
-http://localhost:5001/api
+https://venraj-final.onrender.com/api
 ```
 
 ### Response Format

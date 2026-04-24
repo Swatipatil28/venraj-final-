@@ -34,14 +34,7 @@ const clinicSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: [true, "Image URL is required"],
-      trim: true,
-      validate: {
-        validator: function (v) {
-          return /^(https?:\/\/[^\s]+)$/.test(v);
-        },
-        message: "Please enter a valid URL",
-      },
+      default: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
     },
     isActive: {
       type: Boolean,

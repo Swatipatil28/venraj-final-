@@ -71,7 +71,7 @@ Appointment POST body (AppointmentDTO):
 
 | Variable            | Default                     |
 |---------------------|-----------------------------|
-| VITE_API_BASE_URL   | http://localhost:5001/api   |
+| VITE_API_BASE_URL   | https://venraj-final.onrender.com/api |
 
 ---
 
