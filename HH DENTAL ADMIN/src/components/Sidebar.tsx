@@ -26,7 +26,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export default function Sidebar() {
+export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileMenuOpen?: boolean, setMobileMenuOpen?: (open: boolean) => void }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const logout = useAuthStore((state) => state.logout);
   const { t } = useLanguageStore();
@@ -46,11 +46,27 @@ export default function Sidebar() {
   };
 
   return (
-    <motion.aside
-      initial={false}
-      animate={{ width: isCollapsed ? 80 : 260 }}
-      className="h-screen bg-sidebar-bg border-r border-border-subtle flex flex-col transition-all duration-300 relative z-50"
-    >
+    <>
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileMenuOpen?.(false)}
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          />
+        )}
+      </AnimatePresence>
+      <motion.aside
+        initial={false}
+        animate={{ width: isCollapsed ? 80 : 260 }}
+        className={cn(
+          "h-screen bg-sidebar-bg border-r border-border-subtle flex flex-col transition-all duration-300 z-50",
+          "fixed md:relative top-0 left-0",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        )}
+      >
       {/* Brand */}
       <div className="p-8 border-b border-border-subtle">
         {!isCollapsed ? (
@@ -125,5 +141,6 @@ export default function Sidebar() {
         {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
     </motion.aside>
+    </>
   );
 }

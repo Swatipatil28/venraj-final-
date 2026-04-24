@@ -3,22 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Bell, Search, User, Languages, Sun, Moon } from 'lucide-react';
+import { Bell, Search, User, Languages, Sun, Moon, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useThemeStore } from '../store/useThemeStore';
 
-export default function Topbar() {
+export default function Topbar({ toggleMobileMenu }: { toggleMobileMenu?: () => void }) {
   const user = useAuthStore((state) => state.user);
   const { language, setLanguage, t } = useLanguageStore();
   const { theme, toggleTheme } = useThemeStore();
 
   return (
-    <header className="h-20 bg-bg-main/80 backdrop-blur-md border-b border-border-subtle sticky top-0 z-40 px-8 flex items-center justify-between transition-colors duration-300">
-      {/* Search */}
-      <div className="relative w-96 hidden md:block">
-        <div className="w-full bg-text-primary/5 border border-border-subtle rounded-full px-4 py-2 flex items-center gap-2 transition-colors">
+    <header className="h-16 md:h-20 bg-bg-main/80 backdrop-blur-md border-b border-border-subtle sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between transition-colors duration-300">
+      <div className="flex items-center gap-4 w-full md:w-auto">
+        <button onClick={toggleMobileMenu} className="md:hidden text-text-primary p-2 -ml-2 rounded-lg hover:bg-text-primary/5">
+          <Menu className="w-6 h-6" />
+        </button>
+        {/* Search */}
+        <div className="relative w-full max-w-sm hidden md:block">
+          <div className="w-full bg-text-primary/5 border border-border-subtle rounded-full px-4 py-2 flex items-center gap-2 transition-colors">
           <Search className="w-4 h-4 text-text-secondary" />
           <input
             type="text"

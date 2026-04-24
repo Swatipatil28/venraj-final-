@@ -43,9 +43,9 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="glass-panel hidden rounded-[32px] p-6 lg:block"
+            className="glass-panel mt-12 rounded-[32px] p-4 lg:mt-0 lg:p-6"
           >
-            <div className="image-mask h-[520px] rounded-[28px]">
+            <div className="image-mask h-[320px] lg:h-[520px] rounded-[28px]">
               <img
                 src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1200&q=80"
                 alt="Dental consultation"
