@@ -97,11 +97,6 @@ export default function Sidebar() {
 
       {/* Profile/Logout Section per Theme */}
       <div className="p-6 border-t border-border-subtle space-y-4">
-        <div className="px-3 py-2 rounded-xl bg-accent/10 border border-accent/20 flex flex-col gap-1 items-center justify-center">
-          <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">{isCollapsed ? 'DM' : 'Demo Mode'}</span>
-          {!isCollapsed && <span className="text-[8px] text-accent/60 font-bold uppercase tracking-widest">v2.0 Clinical OS</span>}
-        </div>
-        
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-gold to-accent flex-shrink-0" />
           {!isCollapsed && (

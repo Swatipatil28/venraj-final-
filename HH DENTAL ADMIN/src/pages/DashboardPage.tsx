@@ -77,7 +77,6 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
             <h2 className="text-4xl font-light tracking-tight text-text-primary">{t('managementOverview').split(' ')[0]} <span className="text-accent italic">{t('managementOverview').split(' ')[1]}</span></h2>
-            <span className="px-2 py-1 rounded-md bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent uppercase tracking-widest h-fit mt-2">Demo Mode</span>
           </div>
           <p className="text-text-muted text-sm mt-1">{t('performanceTracking')} {new Date().toLocaleDateString(language === 'te' ? 'te-IN' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.</p>
         </div>

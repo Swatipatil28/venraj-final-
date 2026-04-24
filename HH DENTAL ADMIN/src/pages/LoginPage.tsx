@@ -12,8 +12,8 @@ import { AuthService } from '../services/adminService';
 import { useToast } from '../components/Toast';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@hhdental.in');
-  const [password, setPassword] = useState('Admin@1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore((state) => state.login);
   const { showToast } = useToast();

@@ -12,8 +12,10 @@ export default function ServiceDetailPage() {
   const { data, loading } = useApiResource(getServices, [], []);
 
   const service = data.find((item) => item.id === id);
-  const related = data.filter((item) => service?.relatedServiceIds?.includes(item.id)).slice(0, 3);
-
+  let related = data.filter((item) => item.id !== id && item.category === service?.category).slice(0, 3);
+  if (related.length === 0 && data.length > 0) {
+    related = data.filter((item) => item.id !== id).slice(0, 3);
+  }
 
   if (loading) {
     return (
