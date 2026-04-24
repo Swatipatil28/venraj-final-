@@ -1,0 +1,134 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  LayoutDashboard, 
+  CalendarCheck, 
+  Users, 
+  Stethoscope, 
+  MapPin, 
+  LogOut, 
+  ChevronLeft, 
+  ChevronRight,
+  Sparkles
+} from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export default function Sidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const logout = useAuthStore((state) => state.logout);
+  const { t } = useLanguageStore();
+  const navigate = useNavigate();
+
+  const navItems = [
+    { path: '/dashboard', label: t('dashboard'), icon: LayoutDashboard },
+    { path: '/appointments', label: t('appointments'), icon: CalendarCheck },
+    { path: '/doctors', label: t('doctors'), icon: Stethoscope },
+    { path: '/services', label: t('services'), icon: Sparkles },
+    { path: '/clinics', label: t('clinics'), icon: MapPin },
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <motion.aside
+      initial={false}
+      animate={{ width: isCollapsed ? 80 : 260 }}
+      className="h-screen bg-sidebar-bg border-r border-border-subtle flex flex-col transition-all duration-300 relative z-50"
+    >
+      {/* Brand */}
+      <div className="p-8 border-b border-border-subtle">
+        {!isCollapsed ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <h1 className="text-2xl font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
+            <p className="text-[10px] text-text-muted uppercase tracking-widest mt-1 font-semibold">Admin Prestige</p>
+          </motion.div>
+        ) : (
+          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center mx-auto">
+            <span className="text-bg-main font-bold text-xl">H</span>
+          </div>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) => cn(
+              "flex items-center gap-4 p-4 rounded-r-lg transition-all duration-200 border-l-[3px]",
+              isActive 
+                ? "bg-accent/10 border-accent text-accent" 
+                : "text-text-secondary hover:text-text-primary border-transparent hover:bg-text-primary/5"
+            )}
+          >
+            <item.icon className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-sm font-medium"
+              >
+                {item.label}
+              </motion.span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Profile/Logout Section per Theme */}
+      <div className="p-6 border-t border-border-subtle space-y-4">
+        <div className="px-3 py-2 rounded-xl bg-accent/10 border border-accent/20 flex flex-col gap-1 items-center justify-center">
+          <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">{isCollapsed ? 'DM' : 'Demo Mode'}</span>
+          {!isCollapsed && <span className="text-[8px] text-accent/60 font-bold uppercase tracking-widest">v2.0 Clinical OS</span>}
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-gold to-accent flex-shrink-0" />
+          {!isCollapsed && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <p className="text-sm font-bold text-text-primary truncate max-w-[120px]">{useAuthStore.getState().user?.email.split('@')[0] || 'Admin'}</p>
+              <p className="text-[10px] text-text-muted uppercase font-semibold">Senior Admin</p>
+            </motion.div>
+          )}
+        </div>
+        {!isCollapsed && (
+          <button
+            onClick={handleLogout}
+            className="mt-6 w-full flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-text-muted hover:text-red-400 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            {t('logout')}
+          </button>
+        )}
+      </div>
+
+      {/* Collapse Toggle */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute -right-3 top-24 w-6 h-6 rounded-full bg-accent text-bg-main border border-sidebar-bg flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50"
+      >
+        {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
+    </motion.aside>
+  );
+}

@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-gold: var(--accent);
+  --color-accent: var(--accent);
+  --color-bg-main: var(--bg);
+  --color-sidebar-bg: var(--sidebar);
+  --color-card-bg: var(--card);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-border-subtle: var(--border);
+}
+
+:root {
+  --bg: #0F0F0F;
+  --sidebar: #121212;
+  --card: rgba(255, 255, 255, 0.05);
+  --text-primary: #F5F0E8;
+  --text-secondary: #B0B0B0;
+  --text-muted: #6B7280;
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: #D4AF37;
+  --glass-blur: blur(12px);
+}
+
+.light {
+  --bg: #F8F6F2;
+  --sidebar: #FFFFFF;
+  --card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --border: #E5E5E5;
+  --accent: #C18F5B;
+  --glass-blur: none;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-main text-text-primary antialiased transition-colors duration-300;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-main;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-text-muted/20 rounded-full hover:bg-text-muted/40 transition-colors;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-card-bg border border-border-subtle rounded-2xl transition-all duration-300;
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  .light .glass-panel {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  }
+
+  .gold-border {
+    @apply border-accent;
+  }
+
+  .status-badge {
+    @apply text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold border;
+  }
+
+  .btn-accent {
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-bg-main hover:opacity-90;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  }
+
+  .btn-gold {
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-bg-main hover:opacity-90;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  } /* Backward compatibility */
+
+  .btn-copper {
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-brand-gold text-white hover:opacity-90;
+  }
+
+  .btn-slate {
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-text-primary/5 border border-border-subtle text-text-secondary hover:text-text-primary hover:bg-text-primary/10;
+  }
+}
