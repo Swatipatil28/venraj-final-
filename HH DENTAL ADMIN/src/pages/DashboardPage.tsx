@@ -80,7 +80,7 @@ export default function DashboardPage() {
           </div>
           <p className="text-text-muted text-sm mt-1">{t('performanceTracking')} {new Date().toLocaleDateString(language === 'te' ? 'te-IN' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.</p>
         </div>
-        <button className="btn-accent font-bold">{t('exportCsv')}</button>
+        <button className="btn-accent font-bold w-full md:w-auto">{t('exportCsv')}</button>
       </div>
 
       {/* Stats Grid */}
@@ -222,8 +222,8 @@ export default function DashboardPage() {
       </div>
 
       {selectedAppointment && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-bg-main/80 p-6" onClick={() => setSelectedAppointment(null)}>
-          <div className="w-full max-w-2xl rounded-3xl border border-border-subtle bg-sidebar-bg p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-bg-main/80 p-4" onClick={() => setSelectedAppointment(null)}>
+          <div className="w-full max-w-2xl rounded-3xl border border-border-subtle bg-sidebar-bg p-6 md:p-8 shadow-2xl overflow-y-auto max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-start justify-between">
               <div>
                 <h3 className="text-2xl font-bold text-text-primary">{selectedAppointment.patientName}</h3>

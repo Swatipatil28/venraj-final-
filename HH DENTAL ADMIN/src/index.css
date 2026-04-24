@@ -38,7 +38,7 @@
 
 @layer base {
   body {
-    @apply bg-bg-main text-text-primary antialiased transition-colors duration-300;
+    @apply bg-bg-main text-text-primary antialiased transition-colors duration-300 overflow-x-hidden;
     font-family: 'Helvetica Neue', Arial, sans-serif;
   }
 

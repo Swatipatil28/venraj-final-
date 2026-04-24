@@ -131,7 +131,7 @@ export default function ServicesPage() {
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="btn-accent flex items-center gap-2"
+          className="btn-accent flex items-center justify-center gap-2 w-full md:w-auto"
         >
           <Plus size={18} /> {t('newService')}
         </button>
@@ -207,7 +207,7 @@ export default function ServicesPage() {
                     <p className="text-text-secondary leading-relaxed text-sm">{service.description}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-10 pt-8 border-t border-border-subtle">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-border-subtle">
                     <div className="space-y-4">
                       <h4 className="text-[10px] text-accent font-bold uppercase tracking-[0.2em]">Key Benefits</h4>
                       <ul className="space-y-3">

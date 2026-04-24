@@ -30,11 +30,12 @@ export default function Topbar({ toggleMobileMenu }: { toggleMobileMenu?: () => 
             className="bg-transparent border-none text-xs outline-none w-full text-text-primary placeholder:text-text-muted"
           />
         </div>
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-3 pr-6 border-r border-border-subtle">
+      <div className="flex items-center gap-2 md:gap-6">
+        <div className="flex items-center gap-2 md:gap-3 pr-2 md:pr-6 border-r border-border-subtle">
           <button 
             onClick={toggleTheme}
             className="w-10 h-10 rounded-full border border-border-subtle flex items-center justify-center text-text-secondary hover:text-accent transition-all hover:bg-text-primary/5 active:scale-95 overflow-hidden"
