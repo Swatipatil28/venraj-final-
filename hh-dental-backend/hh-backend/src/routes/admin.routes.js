@@ -32,6 +32,16 @@ const {
   deleteService,
   getServices,
 } = require("../controllers/service.controller");
+const {
+  getAllTestimonials,
+  createTestimonial,
+  updateTestimonial,
+  deleteTestimonial,
+} = require("../controllers/testimonial.controller");
+const {
+  getReviews,
+  approveReview,
+} = require("../controllers/review.controller");
 
 // DTOs
 const { loginRules } = require("../dtos/resource.dto");
@@ -68,5 +78,15 @@ router.get("/services", protect, getServices);
 router.post("/services", protect, serviceRules, validate, createService);
 router.put("/services/:id", protect, serviceRules, validate, updateService);
 router.delete("/services/:id", protect, deleteService);
+
+// ── TESTIMONIALS ─────────────────────────────────────────
+router.get("/testimonials", protect, getAllTestimonials);
+router.post("/testimonials", protect, createTestimonial);
+router.put("/testimonials/:id", protect, updateTestimonial);
+router.delete("/testimonials/:id", protect, deleteTestimonial);
+
+// ── REVIEWS ─────────────────────────────────────────────
+router.get("/reviews", protect, getReviews);
+router.patch("/reviews/:id/approve", protect, approveReview);
 
 module.exports = router;

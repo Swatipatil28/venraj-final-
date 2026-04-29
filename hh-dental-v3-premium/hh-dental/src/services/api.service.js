@@ -38,4 +38,11 @@ export async function submitAppointment(payload) {
 
 export const postAppointment = submitAppointment;
 
+export const getTestimonials = () => getResource("/testimonials");
+
+export async function submitReview(payload) {
+  const res = await api.post("/reviews", payload, requestConfig);
+  return normalizePayload(res.data);
+}
+
 export default api;

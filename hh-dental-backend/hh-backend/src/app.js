@@ -11,6 +11,8 @@ const clinicRoutes      = require("./routes/clinic.routes");
 const doctorRoutes      = require("./routes/doctor.routes");
 const serviceRoutes     = require("./routes/service.routes");
 const appointmentRoutes = require("./routes/appointment.routes");
+const testimonialRoutes = require("./routes/testimonial.routes");
+const reviewRoutes      = require("./routes/review.routes");
 const adminRoutes       = require("./routes/admin.routes");
 
 const app = express();
@@ -83,6 +85,8 @@ app.use("/api/clinics",      clinicRoutes);
 app.use("/api/doctors",      doctorRoutes);
 app.use("/api/services",     serviceRoutes);
 app.use("/api/appointments", appointmentLimiter, appointmentRoutes);
+app.use("/api/testimonials", testimonialRoutes);
+app.use("/api/reviews",      reviewRoutes);
 
 // ── Admin Routes ──────────────────────────────────────────
 app.use("/api/admin", adminRoutes);

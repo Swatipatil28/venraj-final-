@@ -38,6 +38,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
     { path: '/doctors', label: t('doctors'), icon: Stethoscope },
     { path: '/services', label: t('services'), icon: Sparkles },
     { path: '/clinics', label: t('clinics'), icon: MapPin },
+    { path: '/testimonials', label: 'Testimonials', icon: Users },
   ];
 
   const handleLogout = () => {

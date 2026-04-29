@@ -193,7 +193,12 @@ const updateAppointment = async (req, res, next) => {
 
     const prevStatus = appointment.status;
 
-    if (status) appointment.status = status;
+    if (status) {
+      appointment.status = status;
+      if (status === APPOINTMENT_STATUS.COMPLETED) {
+        appointment.reviewRequired = true;
+      }
+    }
     if (notes !== undefined) appointment.notes = notes;
     if (confirmedDate) appointment.confirmedDate = new Date(confirmedDate);
     if (doctorId) appointment.doctorId = doctorId;

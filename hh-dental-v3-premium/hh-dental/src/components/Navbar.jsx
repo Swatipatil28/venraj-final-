@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
@@ -95,6 +96,7 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <ThemeSwitcher />
             <LanguageToggle />
             <Link to="/book-appointment" className="cta-primary hidden sm:inline-flex">
               {t("nav.book")}

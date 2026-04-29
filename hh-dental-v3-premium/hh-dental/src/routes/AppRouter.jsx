@@ -6,6 +6,7 @@ import ServiceDetailPage from "../pages/ServiceDetailPage";
 import DoctorsPage from "../pages/DoctorsPage";
 import LocationsPage from "../pages/LocationsPage";
 import BookAppointmentPage from "../pages/BookAppointmentPage";
+import ReviewPage from "../pages/ReviewPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
 export default function AppRouter() {
@@ -18,6 +19,7 @@ export default function AppRouter() {
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/locations" element={<LocationsPage />} />
         <Route path="/book-appointment" element={<BookAppointmentPage />} />
+        <Route path="/leave-review" element={<ReviewPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -87,6 +87,10 @@ const appointmentSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    reviewRequired: {
+      type: Boolean,
+      default: false,
+    },
 
     // ── Meta ────────────────────────────────────────────
     appointmentRef: {

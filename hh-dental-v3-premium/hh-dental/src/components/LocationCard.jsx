@@ -19,7 +19,6 @@ export default function LocationCard({ clinic }) {
         <div>
           <p className="eyebrow mb-2">{clinic.city}</p>
           <h3 className="text-3xl">{clinic.name}</h3>
-          <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{clinic.address}</p>
           <a href={`tel:${clinic.phone.replace(/\s+/g, "")}`} className="mt-3 block text-sm text-[var(--gold-soft)]">
             {clinic.phone}
           </a>
