@@ -30,10 +30,10 @@ export default function FloatingInput(props: FloatingInputProps) {
           className="w-full bg-transparent px-4 py-4 text-text-primary outline-none placeholder-transparent text-sm"
         />
         <label className={`
-          absolute left-4 transition-all duration-300 pointer-events-none
+          absolute left-4 transition-all duration-300 pointer-events-none z-10
           ${(isFocused || isFilled) ? 
-            '-top-2 text-[10px] bg-sidebar-bg px-2 text-accent font-bold uppercase tracking-widest' : 
-            'top-1/2 -translate-y-1/2 text-sm text-text-muted'}
+            '-top-2.5 text-[10px] bg-sidebar-bg px-2 text-accent font-black uppercase tracking-[0.15em]' : 
+            'top-1/2 -translate-y-1/2 text-sm text-text-muted/60'}
         `}>
           {label}
         </label>
@@ -114,10 +114,10 @@ export function FloatingSelect(props: SelectHTMLAttributes<HTMLSelectElement> & 
           ))}
         </select>
         <label className={`
-          absolute left-4 transition-all duration-300 pointer-events-none
+          absolute left-4 transition-all duration-300 pointer-events-none z-10
           ${(isFocused || isFilled) ? 
-            '-top-2 text-[10px] bg-sidebar-bg px-2 text-accent font-bold uppercase tracking-widest' : 
-            'top-1/2 -translate-y-1/2 text-sm text-text-muted'}
+            '-top-2.5 text-[10px] bg-sidebar-bg px-2 text-accent font-black uppercase tracking-[0.15em]' : 
+            'top-1/2 -translate-y-1/2 text-sm text-text-muted/60'}
         `}>
           {label}
         </label>
