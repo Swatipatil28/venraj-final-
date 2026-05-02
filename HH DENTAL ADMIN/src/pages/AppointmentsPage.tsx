@@ -362,10 +362,10 @@ export default function AppointmentsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-4xl overflow-hidden rounded-3xl border border-border-subtle bg-sidebar-bg shadow-2xl"
+              className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border-subtle bg-sidebar-bg shadow-2xl custom-scrollbar"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between bg-bg-main border-b border-border-subtle px-8 py-6">
+              <div className="sticky top-0 z-20 flex items-center justify-between bg-bg-main/95 backdrop-blur-md border-b border-border-subtle px-8 py-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
                     <Users size={24} />
@@ -468,7 +468,7 @@ export default function AppointmentsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle bg-sidebar-bg/95 p-6">
+              <div className="sticky bottom-0 z-20 flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle bg-bg-main/95 backdrop-blur-md p-6">
                 <div className="flex flex-wrap items-center gap-2">
                   {selectedAppointment.status === 'pending' && (
                     <button
