@@ -1,3 +1,4 @@
+// Backend Server - H&H Dental (V2)
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -18,7 +19,9 @@ const adminRoutes       = require("./routes/admin.routes");
 const app = express();
 
 // ── Security ──────────────────────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // ── CORS ──────────────────────────────────────────────────
 app.use(
@@ -57,6 +60,10 @@ app.use(globalLimiter);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// ── Static Files ──────────────────────────────────────────
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 app.use((req, _res, next) => {
   console.log("Request:", req.method, req.url);
   next();
@@ -80,16 +87,30 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send("H&H Dental API is running...");
+});
+
 // ── Public API Routes ─────────────────────────────────────
 app.use("/api/clinics",      clinicRoutes);
 app.use("/api/doctors",      doctorRoutes);
 app.use("/api/services",     serviceRoutes);
-app.use("/api/appointments", appointmentLimiter, appointmentRoutes);
+app.use("/api/appointments", (req, res, next) => {
+  if (req.method === "POST" && req.path === "/") {
+    return appointmentLimiter(req, res, next);
+  }
+  next();
+}, appointmentRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/reviews",      reviewRoutes);
 
 // ── Admin Routes ──────────────────────────────────────────
 app.use("/api/admin", adminRoutes);
+
+// ── Root Route ────────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.send("H&H Dental API is running...");
+});
 
 // ── Error Handling ────────────────────────────────────────
 app.use(notFound);

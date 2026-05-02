@@ -6,7 +6,7 @@ const getTestimonials = async (req, res, next) => {
   try {
     const testimonials = await Testimonial.find({ isActive: true })
       .sort({ displayOrder: 1, createdAt: -1 });
-    return sendSuccess(res, testimonials, "Testimonials retrieved");
+    return sendSuccess(res, testimonials || [], "Testimonials retrieved");
   } catch (err) {
     next(err);
   }
@@ -15,9 +15,9 @@ const getTestimonials = async (req, res, next) => {
 // GET /api/admin/testimonials  — all (including inactive)
 const getAllTestimonials = async (req, res, next) => {
   try {
-    const testimonials = await Testimonial.find()
+    const testimonials = await Testimonial.find({ isActive: true })
       .sort({ displayOrder: 1, createdAt: -1 });
-    return sendSuccess(res, testimonials, "All testimonials retrieved");
+    return sendSuccess(res, testimonials || [], "All testimonials retrieved");
   } catch (err) {
     next(err);
   }

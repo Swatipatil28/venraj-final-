@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-gold: var(--accent);
+  --color-brand-accent: var(--accent);
   --color-accent: var(--accent);
   --color-bg-main: var(--bg);
   --color-sidebar-bg: var(--sidebar);
@@ -13,26 +13,15 @@
 }
 
 :root {
-  --bg: #0F0F0F;
-  --sidebar: #121212;
-  --card: rgba(255, 255, 255, 0.05);
-  --text-primary: #F5F0E8;
-  --text-secondary: #B0B0B0;
-  --text-muted: #6B7280;
-  --border: rgba(255, 255, 255, 0.1);
-  --accent: #D4AF37;
-  --glass-blur: blur(12px);
-}
-
-.light {
-  --bg: #F8F6F2;
+  color-scheme: light;
+  --bg: #F1F5F9;
   --sidebar: #FFFFFF;
   --card: #FFFFFF;
-  --text-primary: #1A1A1A;
-  --text-secondary: #555555;
-  --text-muted: #888888;
-  --border: #E5E5E5;
-  --accent: #C18F5B;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  --accent: #2E86AB;
   --glass-blur: none;
 }
 
@@ -62,15 +51,11 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   }
 
-  .light .glass-panel {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  .glow-accent {
+    box-shadow: 0 0 15px rgba(46, 134, 171, 0.15);
   }
 
-  .glow-gold {
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
-  }
-
-  .gold-border {
+  .accent-border {
     @apply border-accent;
   }
 
@@ -79,17 +64,17 @@
   }
 
   .btn-accent {
-    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-bg-main hover:opacity-90;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-white hover:opacity-90;
+    box-shadow: 0 4px 14px rgba(46, 134, 171, 0.3);
   }
 
-  .btn-gold {
-    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-bg-main hover:opacity-90;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+  .btn-accent {
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-white hover:opacity-90;
+    box-shadow: 0 4px 14px rgba(46, 134, 171, 0.3);
   } /* Backward compatibility */
 
   .btn-copper {
-    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-brand-gold text-white hover:opacity-90;
+    @apply px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 active:scale-95 bg-accent text-white hover:opacity-90;
   }
 
   .btn-slate {

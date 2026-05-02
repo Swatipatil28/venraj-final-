@@ -34,8 +34,8 @@ export default function TestimonialsPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/admin/testimonials');
-      setTestimonials(res.data.data || res.data);
+      const data = await api.get('/admin/testimonials');
+      setTestimonials(Array.isArray(data) ? data : []);
     } catch (error) {
       showToast('Failed to fetch testimonials', 'error');
     } finally {
@@ -126,7 +126,7 @@ export default function TestimonialsPage() {
                   </div>
                 </div>
                 <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">"{t.quote}"</p>
-                <div className="mt-4 flex items-center gap-1 text-gold">
+                <div className="mt-4 flex items-center gap-1 text-accent">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
                 </div>
               </motion.div>

@@ -13,13 +13,18 @@ import {
   CheckCircle,
   X,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Upload,
+  ImageIcon,
+  Loader2,
+  Search
 } from 'lucide-react';
-import { ServiceService } from '../services/adminService';
+import { ServiceService, UploadService } from '../services/adminService';
 import { ServiceDTO, ServiceCategory } from '../types';
 import Modal from '../components/Modal';
 import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/FloatingInput';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { useSearchStore } from '../store/useSearchStore';
 
 import { useToast } from '../components/Toast';
 
@@ -32,7 +37,25 @@ export default function ServicesPage() {
   
   // CRUD State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [selectedService, setSelectedService] = useState<ServiceDTO | null>(null);
+  
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const imageUrl = await UploadService.uploadImage(file);
+      setFormData(prev => ({ ...prev, image: imageUrl }));
+      showToast('Image uploaded successfully');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Upload failed', 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const [formData, setFormData] = useState<Partial<ServiceDTO>>({
     name: '',
     category: 'Dental',
@@ -115,9 +138,16 @@ export default function ServicesPage() {
     }
   };
 
-  const filteredServices = activeTab === 'All' 
-    ? services 
-    : services.filter(s => s.category === activeTab);
+  const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
+
+  const filteredServices = services.filter((service) => {
+    const query = globalSearchQuery.toLowerCase();
+    const matchesSearch =
+      service.name.toLowerCase().includes(query) ||
+      service.description.toLowerCase().includes(query);
+    const matchesCategory = activeTab === 'All' || service.category === activeTab;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="space-y-8 pb-20">
@@ -138,22 +168,32 @@ export default function ServicesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-4 p-1 bg-text-primary/[0.02] border border-border-subtle rounded-2xl w-fit">
-        {['All', 'Dental', 'Aesthetic'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className={`
-              px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-300
-              ${activeTab === tab 
-                ? 'bg-accent text-bg-main shadow-[0_0_20px_rgba(212,175,55,0.2)] scale-105' 
-                : 'text-text-muted hover:text-text-primary hover:bg-text-primary/5'}
-            `}
-          >
-            {tab === 'All' ? t('viewAll') : t(tab.toLowerCase())}
-          </button>
-        ))}
-      </div>
+      <div className="flex flex-wrap items-center gap-4">
+            <div className="flex rounded-xl border border-border-subtle bg-sidebar-bg p-1 shadow-xl">
+              {(['All', 'Dental', 'Aesthetic'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`rounded-lg px-6 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    activeTab === tab ? 'bg-accent text-bg-main shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {t(tab.toLowerCase()) || tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder')}
+                className="w-64 rounded-xl border border-border-subtle bg-sidebar-bg py-2.5 pl-12 pr-4 text-sm text-text-secondary shadow-xl transition-all focus:border-accent/50 focus:outline-none"
+                value={globalSearchQuery}
+                onChange={(e) => setGlobalSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
 
       {/* Grid */}
       {loading ? (
@@ -179,7 +219,7 @@ export default function ServicesPage() {
                     p-4 rounded-2xl border transition-all duration-500
                     ${service.category === 'Dental' 
                       ? 'bg-accent/10 text-accent border-accent/20' 
-                      : 'bg-brand-gold/10 text-brand-gold border-brand-gold/20'}
+                      : 'bg-brand-accent/10 text-brand-accent border-brand-accent/20'}
                   `}>
                     <Sparkles size={32} />
                   </div>
@@ -188,7 +228,7 @@ export default function ServicesPage() {
                       px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] border
                       ${service.category === 'Dental' 
                         ? 'text-accent border-accent/30 bg-accent/5' 
-                        : 'text-brand-gold border-brand-gold/30 bg-brand-gold/5'}
+                        : 'text-brand-accent border-brand-accent/30 bg-brand-accent/5'}
                     `}>
                       {service.category}
                     </span>
@@ -221,7 +261,7 @@ export default function ServicesPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-[10px] text-brand-gold font-bold uppercase tracking-[0.2em]">Clinical Flow</h4>
+                      <h4 className="text-[10px] text-brand-accent font-bold uppercase tracking-[0.2em]">Clinical Flow</h4>
                       <div className="flex flex-col gap-2">
                         {(service.processSteps || []).slice(0, 3).map((step, i) => (
                           <div key={i} className="flex items-center gap-3 text-xs text-text-muted">
@@ -237,7 +277,7 @@ export default function ServicesPage() {
                 {/* Visual Accent */}
                 <div className={`
                   absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-[100px] transition-all duration-700
-                  ${service.category === 'Dental' ? 'bg-accent/10' : 'bg-brand-gold/10'}
+                  ${service.category === 'Dental' ? 'bg-accent/10' : 'bg-brand-accent/10'}
                 `} />
               </motion.div>
             ))}
@@ -279,21 +319,71 @@ export default function ServicesPage() {
             onChange={(e) => setFormData({...formData, description: e.target.value})}
           />
 
-          <FloatingInput
-            label="Service Image URL"
-            value={formData.image || ''}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-          />
-          {formData.image ? (
-            <img
-              src={formData.image}
-              alt="Service preview"
-              className="h-24 w-full rounded-lg object-cover border border-border-subtle"
-              onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/400x300?text=No+Image";
-              }}
-            />
-          ) : null}
+          <div className="space-y-4">
+            <label className="text-[10px] text-accent font-bold uppercase tracking-widest ml-2">Service Visualization</label>
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex-1 space-y-4">
+                <FloatingInput
+                  label="Image URL (External or Uploaded)"
+                  value={formData.image || ''}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                />
+                <div className="relative group">
+                  <input
+                    type="file"
+                    id="service-image-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                  />
+                  <label
+                    htmlFor="service-image-upload"
+                    className={`
+                      flex items-center justify-center gap-3 px-6 py-4 rounded-2xl border-2 border-dashed border-border-subtle 
+                      bg-text-primary/[0.02] text-text-muted hover:text-accent hover:border-accent/40 cursor-pointer transition-all
+                      ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
+                    `}
+                  >
+                    {uploading ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        <span>Uploading from Device...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={18} />
+                        <span>Upload from Local Device</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
+              
+              <div className="w-full md:w-48 h-32 rounded-2xl border border-border-subtle overflow-hidden bg-text-primary/[0.02] flex items-center justify-center relative group">
+                {formData.image ? (
+                  <>
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://via.placeholder.com/400x300?text=Invalid+Image";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-bg-main/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <ImageIcon size={24} className="text-accent" />
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-text-muted">
+                    <ImageIcon size={32} strokeWidth={1.5} />
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">No Image</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Benefits Array */}
@@ -339,11 +429,11 @@ export default function ServicesPage() {
             {/* Process Array */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] text-brand-gold font-bold uppercase tracking-widest ml-2">{t('clinicalFlow')}</label>
+                <label className="text-[10px] text-brand-accent font-bold uppercase tracking-widest ml-2">{t('clinicalFlow')}</label>
                 <button 
                   type="button"
                   onClick={() => setFormData({...formData, processSteps: [...(formData.processSteps || []), '']})}
-                  className="p-1.5 hover:bg-text-primary/5 rounded-lg text-brand-gold transition-colors"
+                  className="p-1.5 hover:bg-text-primary/5 rounded-lg text-brand-accent transition-colors"
                 >
                   <Plus size={16} />
                 </button>
@@ -352,7 +442,7 @@ export default function ServicesPage() {
                 {(formData.processSteps || []).map((step, i) => (
                   <div key={i} className="group flex gap-3">
                     <input 
-                      className="flex-1 bg-text-primary/5 border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-brand-gold/30 transition-all font-mono"
+                      className="flex-1 bg-text-primary/5 border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary outline-none focus:border-brand-accent/30 transition-all font-mono"
                       placeholder={`Step ${i + 1}`}
                       value={step}
                       onChange={(e) => {

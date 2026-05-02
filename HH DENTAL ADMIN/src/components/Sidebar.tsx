@@ -69,14 +69,14 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
         )}
       >
       {/* Brand */}
-      <div className="p-8 border-b border-border-subtle">
+      <div className="p-6 md:p-8 border-b border-border-subtle">
         {!isCollapsed ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h1 className="text-2xl font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
-            <p className="text-[10px] text-text-muted uppercase tracking-widest mt-1 font-semibold">Admin Prestige</p>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
+            <p className="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest mt-1 font-semibold">Admin Prestige</p>
           </motion.div>
         ) : (
           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center mx-auto">
@@ -115,7 +115,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
       {/* Profile/Logout Section per Theme */}
       <div className="p-6 border-t border-border-subtle space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-gold to-accent flex-shrink-0" />
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-accent to-accent flex-shrink-0" />
           {!isCollapsed && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <p className="text-sm font-bold text-text-primary truncate max-w-[120px]">{useAuthStore.getState().user?.email.split('@')[0] || 'Admin'}</p>

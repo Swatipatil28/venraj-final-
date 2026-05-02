@@ -37,7 +37,7 @@ export default function ReviewPage() {
         <div className="container-shell max-w-2xl">
           {status === "success" ? (
             <div className="glass-panel rounded-[34px] p-8 text-center">
-              <h2 className="text-3xl text-[var(--gold)]">Thank You!</h2>
+              <h2 className="text-3xl text-[var(--primary)]">Thank You!</h2>
               <p className="mt-4 text-[var(--muted)]">Your review has been successfully submitted.</p>
             </div>
           ) : (

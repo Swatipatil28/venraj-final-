@@ -38,7 +38,7 @@ export default function ClinicsPage() {
     name: '',
     city: '',
     state: 'Telangana',
-    address: '',
+    area: '',
     phone: '',
     email: '',
     image: ''
@@ -71,7 +71,7 @@ export default function ClinicsPage() {
         name: '',
         city: '',
         state: 'Telangana',
-        address: '',
+        area: '',
         phone: '',
         email: '',
         image: ''
@@ -162,27 +162,15 @@ export default function ClinicsPage() {
                       className="glass-panel group relative overflow-hidden bg-sidebar-bg transition-all duration-500 rounded-3xl border border-border-subtle"
                     >
                       <div className="flex flex-col sm:flex-row">
-                        <div className="sm:w-48 bg-text-primary/[0.02] relative border-r border-border-subtle flex items-center justify-center p-0 overflow-hidden">
-                          <img
-                            src={clinic.image || "https://via.placeholder.com/400x300?text=No+Image"}
-                            alt={clinic.name}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://via.placeholder.com/400x300?text=No+Image";
-                            }}
-                          />
-                          <div className="absolute top-4 left-4">
-                            <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-accent/5 border border-accent/20 text-[8px] font-bold text-accent uppercase tracking-tighter">
-                              <Check size={10} /> Active Unit
-                            </span>
-                          </div>
-                        </div>
-
                         <div className="flex-1 p-8">
                           <div className="flex items-start justify-between mb-8">
                             <div>
-                              <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent transition-colors">{clinic.name}</h3>
-                              <p className="text-accent text-[10px] font-bold uppercase tracking-[0.2em] mt-1">{clinic.city}, {clinic.state}</p>
+                              <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent transition-colors">{clinic.area || clinic.name || 'Unnamed Clinic'}</h3>
+                              {(clinic.city || clinic.state) && (
+                                <p className="text-accent text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
+                                  {[clinic.city, clinic.state].filter(Boolean).join(', ')}
+                                </p>
+                              )}
                             </div>
                             <div className="flex gap-2">
                               <button onClick={() => handleOpenModal(clinic)} className="p-2.5 text-text-muted hover:text-text-primary transition-colors bg-text-primary/5 rounded-xl border border-border-subtle">
@@ -199,8 +187,8 @@ export default function ClinicsPage() {
                               <div className="flex items-start gap-4">
                                 <MapPin size={18} className="text-accent mt-1 flex-shrink-0" />
                                 <div>
-                                  <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest block mb-1">{t('address')}</span>
-                                  <p className="text-xs text-text-secondary leading-relaxed font-light">{clinic.address}</p>
+                                  <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest block mb-1">{t('area') || 'Area'}</span>
+                                  <p className="text-xs text-text-secondary leading-relaxed font-light">{clinic.area}</p>
                                 </div>
                               </div>
                             </div>
@@ -245,14 +233,8 @@ export default function ClinicsPage() {
       >
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FloatingInput 
-              label={t('facilityName')} 
-              required
-              value={formData.name || ''}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
             <FloatingSelect 
-              label={t('state')} 
+              label="Branch" 
               required
               value={formData.state || ''}
               onChange={(e) => setFormData({...formData, state: e.target.value as any})}
@@ -260,12 +242,6 @@ export default function ClinicsPage() {
                 { label: 'Telangana', value: 'Telangana' },
                 { label: 'Andhra Pradesh', value: 'Andhra Pradesh' }
               ]}
-            />
-            <FloatingInput 
-              label={t('city')} 
-              required
-              value={formData.city || ''}
-              onChange={(e) => setFormData({...formData, city: e.target.value})}
             />
             <FloatingInput 
               label={t('phone')} 
@@ -283,27 +259,13 @@ export default function ClinicsPage() {
             onChange={(e) => setFormData({...formData, email: e.target.value})}
           />
 
-          <FloatingInput
-            label="Location Image URL"
-            value={formData.image || ''}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-          />
-          {formData.image ? (
-            <img
-              src={formData.image}
-              alt="Clinic preview"
-              className="h-24 w-full rounded-lg object-cover border border-border-subtle"
-              onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/400x300?text=No+Image";
-              }}
-            />
-          ) : null}
+
 
           <FloatingTextArea 
-            label={t('streetAddress')} 
+            label={t('area') || 'Area'} 
             required
-            value={formData.address || ''}
-            onChange={(e) => setFormData({...formData, address: e.target.value})}
+            value={formData.area || ''}
+            onChange={(e) => setFormData({...formData, area: e.target.value})}
           />
 
           <div className="flex justify-end gap-4 pt-8 border-t border-border-subtle">

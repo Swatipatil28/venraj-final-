@@ -8,7 +8,10 @@ import ServicesPage from './pages/ServicesPage';
 import ClinicsPage from './pages/ClinicsPage';
 import TestimonialsPage from './pages/TestimonialsPage';
 
+import { useEffect } from 'react';
+
 export default function App() {
+
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />

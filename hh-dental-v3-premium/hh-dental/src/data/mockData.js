@@ -1,144 +1,167 @@
 export const services = [
   {
-    id: "svc-implant-smiles",
+    id: "svc-checkup",
+    title: "Dental Check-up",
+    category: "dental",
+    description: "Comprehensive oral examination to maintain your dental health.",
+    shortDescription: "Routine examination and preventive care.",
+    imageUrl: "https://images.unsplash.com/photo-1625134673337-519d00bb0f0c?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Early detection", "Preventive care", "Personalized advice"],
+    process: ["Clinical examination", "X-ray if needed", "Cleaning recommendation"],
+    relatedServiceIds: ["svc-implants", "svc-caries"]
+  },
+  {
+    id: "svc-smile",
+    title: "Smile Correction",
+    category: "dental",
+    description: "Transform your smile with our advanced correction techniques.",
+    shortDescription: "Bespoke smile design and correction.",
+    imageUrl: "https://images.unsplash.com/photo-1593022356769-11f762e25ed9?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Enhanced aesthetics", "Boosted confidence", "Improved function"],
+    process: ["Smile analysis", "Treatment planning", "Procedure execution"],
+    relatedServiceIds: ["svc-veneers", "svc-aligners"]
+  },
+  {
+    id: "svc-implants",
     title: "Dental Implants",
     category: "dental",
-    description: "Permanent implant restorations designed for stability, confidence, and natural aesthetics.",
-    shortDescription: "Precision implants for seamless tooth replacement and renewed function.",
+    description: "Permanent tooth replacement that looks, feels, and functions like your natural teeth.",
+    shortDescription: "Permanent and natural tooth replacement.",
     imageUrl: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
-    benefits: [
-      "Natural-looking replacement tailored to your bite and face",
-      "Restores chewing comfort and speech confidence",
-      "Helps preserve jawbone support over time",
-      "Planned digitally for accuracy and comfort"
-    ],
-    process: [
-      "Digital scans and smile analysis",
-      "Custom implant planning with CBCT guidance",
-      "Precision placement with comfort-first sedation options",
-      "Healing and final zirconia restoration delivery"
-    ],
-    relatedServiceIds: ["svc-full-smile", "svc-root-canal", "svc-whitening"]
+    benefits: ["Lifetime durability", "Natural appearance", "Preserves jawbone"],
+    process: ["Consultation", "Implant placement", "Healing", "Crown fitting"],
+    relatedServiceIds: ["svc-full-mouth", "svc-veneers"]
   },
   {
-    id: "svc-whitening",
-    title: "Teeth Whitening",
+    id: "svc-caries",
+    title: "Dental Caries Management & Fillings",
     category: "dental",
-    description: "Professional whitening protocols that brighten safely while protecting enamel.",
-    shortDescription: "In-chair and take-home brightening for polished, camera-ready smiles.",
-    imageUrl: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Noticeable brightening in a single visit", "Custom shade planning for a refined result", "Reduced sensitivity with clinician-guided care", "Pairs beautifully with smile makeover plans"],
-    process: ["Smile consultation and shade mapping", "Enamel-safe prep and protection", "Targeted whitening activation", "Aftercare guidance for longevity"],
-    relatedServiceIds: ["svc-veneers", "svc-full-smile", "svc-cleaning"]
-  },
-  {
-    id: "svc-veneers",
-    title: "Porcelain Veneers",
-    category: "dental",
-    description: "Custom porcelain veneers shaped for proportion, brightness, and a naturally elegant finish.",
-    shortDescription: "Luxury smile design with handcrafted porcelain detail.",
-    imageUrl: "https://images.unsplash.com/photo-1588776814546-ec7e7f4d4048?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Refines shape, spacing, and symmetry", "Beautiful translucency with stain resistance", "Designed around your facial features", "Ideal for complete smile transformations"],
-    process: ["Facial analysis and digital smile preview", "Minimal preparation and impression capture", "Trial smile review and refinement", "Final veneer placement and polishing"],
-    relatedServiceIds: ["svc-full-smile", "svc-whitening", "svc-aligners"]
-  },
-  {
-    id: "svc-root-canal",
-    title: "Microscopic Root Canal",
-    category: "dental",
-    description: "Comfort-led endodontic care using magnification and modern rotary systems.",
-    shortDescription: "Pain-relieving root canal treatment with precise microscopic care.",
+    description: "Effective treatment for cavities using modern filling materials.",
+    shortDescription: "Advanced cavity treatment and fillings.",
     imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Relieves pain while preserving your natural tooth", "Improves precision with magnification", "Efficient treatment and gentle recovery", "Pairs with restorative crowns for long-term strength"],
-    process: ["Diagnosis and digital imaging", "Comfort-first local anesthesia", "Microscopic canal cleaning and sealing", "Protective restoration planning"],
-    relatedServiceIds: ["svc-implant-smiles", "svc-cleaning", "svc-full-smile"]
+    benefits: ["Stops decay", "Restores tooth structure", "Pain relief"],
+    process: ["Decay removal", "Cavity preparation", "Filling placement"],
+    relatedServiceIds: ["svc-checkup", "svc-kids"]
   },
   {
     id: "svc-aligners",
-    title: "Clear Aligners",
+    title: "Invisalign & Aligners",
     category: "dental",
-    description: "Discreet orthodontic correction for adults and teens who want an elegant alignment journey.",
-    shortDescription: "Transparent aligner treatment for straighter smiles with minimal disruption.",
+    description: "Discreet orthodontic solutions for a straighter smile without braces.",
+    shortDescription: "Clear aligner therapy for perfect alignment.",
     imageUrl: "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Nearly invisible and easy to maintain", "Digital treatment preview before you begin", "Comfortable incremental tooth movement", "Supports bite balance and smile symmetry"],
-    process: ["Scan-based orthodontic assessment", "Digital movement planning", "Custom aligner delivery and tracking", "Retention and smile refinement"],
-    relatedServiceIds: ["svc-veneers", "svc-whitening", "svc-full-smile"]
+    benefits: ["Nearly invisible", "Removable", "Comfortable"],
+    process: ["Digital scan", "3D planning", "Custom aligner wear"],
+    relatedServiceIds: ["svc-smile", "svc-veneers"]
   },
   {
-    id: "svc-cleaning",
-    title: "Dental Hygiene Therapy",
+    id: "svc-veneers",
+    title: "Crowns & Veneers",
     category: "dental",
-    description: "Advanced cleaning and gum wellness care for fresh breath, healthier tissue, and prevention.",
-    shortDescription: "Deep hygiene care that keeps your smile polished and healthy.",
-    imageUrl: "https://images.unsplash.com/photo-1625134673337-519d00bb0f0c?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Removes buildup and freshens breath", "Supports long-term gum health", "Helps prevent cavities and inflammation", "Excellent as a routine smile maintenance visit"],
-    process: ["Oral health assessment", "Gentle ultrasonic and manual cleaning", "Polishing and gum-care guidance", "Recall and prevention planning"],
-    relatedServiceIds: ["svc-whitening", "svc-root-canal", "svc-aligners"]
+    description: "Restore and enhance your teeth with custom-crafted crowns and veneers.",
+    shortDescription: "High-quality ceramic crowns and veneers.",
+    imageUrl: "https://images.unsplash.com/photo-1588776814546-ec7e7f4d4048?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Natural look", "Strength", "Stain resistance"],
+    process: ["Tooth prep", "Impression", "Fitting"],
+    relatedServiceIds: ["svc-smile", "svc-implants"]
   },
   {
-    id: "svc-full-smile",
-    title: "Full Smile Makeover",
-    category: "aesthetic",
-    description: "A bespoke treatment plan combining restorative and cosmetic dentistry for a complete smile transformation.",
-    shortDescription: "Custom smile makeover plans crafted around facial harmony and confidence.",
+    id: "svc-dentures",
+    title: "Complete Dentures",
+    category: "dental",
+    description: "High-quality dentures for full mouth restoration and function.",
+    shortDescription: "Removable and fixed denture solutions.",
+    imageUrl: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Restores chewing", "Natural look", "Comfortable fit"],
+    process: ["Impressions", "Trial fit", "Final delivery"],
+    relatedServiceIds: ["svc-full-mouth", "svc-implants"]
+  },
+  {
+    id: "svc-full-mouth",
+    title: "Full Mouth Rehabilitation",
+    category: "dental",
+    description: "Comprehensive reconstruction of all teeth for health and aesthetics.",
+    shortDescription: "Complete oral health and aesthetic restoration.",
     imageUrl: "https://images.unsplash.com/photo-1593022356769-11f762e25ed9?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Tailored around your features and priorities", "Blends function, aesthetics, and longevity", "Combines multiple disciplines under one team", "Perfect for milestone events and confidence rebuilds"],
-    process: ["Private consultation and smile goals review", "Comprehensive imaging and treatment blueprint", "Phased transformation with comfort-focused scheduling", "Final refinement and maintenance planning"],
-    relatedServiceIds: ["svc-veneers", "svc-whitening", "svc-implant-smiles"]
+    benefits: ["Total restoration", "Improved bite", "Aesthetic overhaul"],
+    process: ["Deep analysis", "Phased treatment", "Final restoration"],
+    relatedServiceIds: ["svc-implants", "svc-dentures"]
   },
   {
-    id: "svc-facial-balance",
-    title: "Facial Aesthetic Dentistry",
-    category: "aesthetic",
-    description: "Non-surgical facial enhancement paired with dental planning for overall lower-face harmony.",
-    shortDescription: "Refined aesthetic planning for lips, profile balance, and smile framing.",
-    imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Enhances smile framing and profile balance", "Subtle, elegant improvements", "Planned alongside dental proportions", "Ideal for confidence-led refinements"],
-    process: ["Aesthetic consultation and facial mapping", "Conservative treatment design", "Procedure with comfort-led precision", "Review and maintenance plan"],
-    relatedServiceIds: ["svc-full-smile", "svc-whitening", "svc-veneers"]
-  },
-  {
-    id: "svc-gummy-smile",
-    title: "Gum Contouring",
-    category: "aesthetic",
-    description: "Laser-led gum sculpting to reveal more tooth structure and create balanced smile proportions.",
-    shortDescription: "Laser contouring for cleaner, more balanced smile architecture.",
+    id: "svc-guards",
+    title: "Mouth Guards & Oral Appliances",
+    category: "dental",
+    description: "Custom appliances for sports protection and teeth grinding.",
+    shortDescription: "Protective and therapeutic oral appliances.",
     imageUrl: "https://images.unsplash.com/photo-1623854767648-e7bb8009f0db?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Improves symmetry and smile balance", "Performed with modern laser precision", "Fast recovery and minimal downtime", "Often combined with whitening or veneers"],
-    process: ["Smile design analysis", "Laser contour planning", "Precise reshaping of gum margins", "Review and optional cosmetic pairing"],
-    relatedServiceIds: ["svc-whitening", "svc-veneers", "svc-full-smile"]
+    benefits: ["Injury prevention", "Protects enamel", "Better sleep"],
+    process: ["Impression", "Custom fabrication", "Fitting"],
+    relatedServiceIds: ["svc-checkup"]
   },
   {
-    id: "svc-kids-dentistry",
+    id: "svc-kids",
     title: "Pediatric Dentistry",
     category: "dental",
-    description: "Child-friendly preventive and restorative dentistry focused on comfort and lifelong oral habits.",
-    shortDescription: "Gentle pediatric care with prevention-first treatment plans.",
+    description: "Specialized dental care for children in a friendly environment.",
+    shortDescription: "Gentle and specialized care for kids.",
     imageUrl: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
-    benefits: ["Calm first-visit experience for children", "Early cavity and bite-risk detection", "Preventive plans for growth stages", "Parent guidance and easy follow-up"],
-    process: ["Child dental assessment", "Preventive cleaning and fluoride", "Age-appropriate treatment if required", "Home-care coaching for guardians"],
-    relatedServiceIds: ["svc-cleaning", "svc-aligners", "svc-whitening"]
+    benefits: ["Child-friendly", "Preventive focus", "Early habit correction"],
+    process: ["Gentle check-up", "Preventive care", "Parent education"],
+    relatedServiceIds: ["svc-checkup", "svc-caries"]
+  },
+  {
+    id: "svc-trauma",
+    title: "Head and Neck Trauma, Cysts & Tumors",
+    category: "dental",
+    description: "Expert surgical management of complex head and neck conditions.",
+    shortDescription: "Advanced maxillofacial surgical care.",
+    imageUrl: "https://images.unsplash.com/photo-1579154235602-3c2c240954b4?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Expert care", "Advanced techniques", "Compassionate approach"],
+    process: ["Diagnosis", "Surgical planning", "Operation", "Recovery"],
+    relatedServiceIds: ["svc-implants"]
+  },
+  {
+    id: "svc-facial",
+    title: "Facial Aesthetics",
+    category: "aesthetic",
+    description: "Enhance your natural beauty with our aesthetic facial treatments.",
+    shortDescription: "Non-surgical facial rejuvenation and enhancement.",
+    imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Youthful look", "Balanced features", "Non-surgical options"],
+    process: ["Consultation", "Treatment mapping", "Procedure"],
+    relatedServiceIds: ["svc-smile", "svc-hair"]
+  },
+  {
+    id: "svc-hair",
+    title: "Hair Transplant & Other Services",
+    category: "aesthetic",
+    description: "Advanced hair restoration and various aesthetic enhancements.",
+    shortDescription: "Modern hair restoration solutions.",
+    imageUrl: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
+    benefits: ["Natural hair growth", "Self-confidence", "Expert execution"],
+    process: ["Consultation", "Procedure", "Aftercare"],
+    relatedServiceIds: ["svc-facial"]
   }
 ];
 
 export const doctors = [
-  { id: "doc-haritha", name: "Dr. Haritha Reddy", specialization: "Prosthodontics", experience: "14 years", clinics: ["Kondapur", "Manikonda"], qualifications: "MDS, Smile Rehabilitation", bio: "Known for full-mouth reconstruction plans that balance aesthetics with long-term comfort.", imageUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80" },
-  { id: "doc-hemanth", name: "Dr. Hemanth Kumar", specialization: "Orthodontics", experience: "11 years", clinics: ["Vijayawada", "Guntur"], qualifications: "MDS, Clear Aligner Planning", bio: "Leads premium aligner and smile-balance programs for adult professionals and teens.", imageUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80" },
-  { id: "doc-sravani", name: "Dr. Sravani Nair", specialization: "Implantology", experience: "12 years", clinics: ["Tirupati", "Vizag"], qualifications: "MDS, FICOI", bio: "Specializes in digitally guided implant placement and aesthetic anterior restorations.", imageUrl: "https://images.unsplash.com/photo-1594824388853-d0c88d5f0ec2?auto=format&fit=crop&w=900&q=80" },
-  { id: "doc-priya", name: "Dr. Priya Anand", specialization: "Endodontics", experience: "9 years", clinics: ["Nellore", "Guntur"], qualifications: "MDS, Microscopic Endodontics", bio: "Focused on pain-relieving microscopic root canal therapy with restorative preservation.", imageUrl: "https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=900&q=80" },
-  { id: "doc-rajesh", name: "Dr. Rajesh Varma", specialization: "Facial Aesthetics", experience: "10 years", clinics: ["Kondapur", "Vizag"], qualifications: "MD, Facial Rejuvenation", bio: "Pairs conservative facial aesthetic refinement with smile design consultations.", imageUrl: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=900&q=80" },
-  { id: "doc-anil", name: "Dr. Anil Chandra", specialization: "Oral Surgery", experience: "16 years", clinics: ["Tirupati", "Vijayawada"], qualifications: "MDS, Maxillofacial Surgery", bio: "Leads advanced surgical procedures with comfort-focused planning and meticulous recovery care.", imageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=900&q=80" }
+  { id: "doc-harshita", name: "Dr Harshita Akurathi", specialization: "Prosthodontist & Implantologist", experience: "10+ Years", clinics: ["Kondapur", "Manikonda", "Tirupati"], qualifications: "MDS (Prosthodontics)", bio: "Expert in dental implants and cosmetic dentistry, bringing smiles back to life.", imageUrl: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80" },
+  { id: "doc-harshith", name: "Dr K Harshith", specialization: "Oral & Maxillofacial Surgeon", experience: "8+ Years", clinics: ["Vijayawada", "Guntur", "Kondapur"], qualifications: "MDS (Oral & Maxillofacial Surgery)", bio: "Specialist in complex oral surgeries and facial aesthetics.", imageUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80" },
 ];
 
 export const clinics = [
-  { id: "clinic-kondapur", name: "H&H Dental Kondapur", city: "Hyderabad", region: "Telangana", address: "Plot 45, Botanical Garden Road, Kondapur, Hyderabad 500084", phone: "+91 98765 11001", mapUrl: "https://maps.google.com/?q=Kondapur+Hyderabad", imageUrl: "https://images.unsplash.com/photo-1631217868264-e6b90bb7e133?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-manikonda", name: "H&H Dental Manikonda", city: "Hyderabad", region: "Telangana", address: "Lanco Hills Road, Manikonda, Hyderabad 500089", phone: "+91 98765 11002", mapUrl: "https://maps.google.com/?q=Manikonda+Hyderabad", imageUrl: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-tirupati", name: "H&H Dental Tirupati", city: "Tirupati", region: "Andhra Pradesh", address: "Air Bypass Road, Tirupati 517501", phone: "+91 98765 11003", mapUrl: "https://maps.google.com/?q=Tirupati", imageUrl: "https://images.unsplash.com/photo-1643297654416-0571c5a42199?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-ongole", name: "H&H Dental Ongole", city: "Ongole", region: "Andhra Pradesh", address: "Kurnool Road, Ongole 523001", phone: "+91 98765 11004", mapUrl: "https://maps.google.com/?q=Ongole", imageUrl: "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-guntur", name: "H&H Dental Guntur", city: "Guntur", region: "Andhra Pradesh", address: "Brodipet 4th Lane, Guntur 522002", phone: "+91 98765 11005", mapUrl: "https://maps.google.com/?q=Guntur", imageUrl: "https://images.unsplash.com/photo-1629904853716-f0bc54eea481?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-vijayawada", name: "H&H Dental Vijayawada", city: "Vijayawada", region: "Andhra Pradesh", address: "Benz Circle, Vijayawada 520010", phone: "+91 98765 11006", mapUrl: "https://maps.google.com/?q=Vijayawada", imageUrl: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a41?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-vizag", name: "H&H Dental Vizag", city: "Visakhapatnam", region: "Andhra Pradesh", address: "MVP Colony, Visakhapatnam 530017", phone: "+91 98765 11007", mapUrl: "https://maps.google.com/?q=Visakhapatnam", imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80" },
-  { id: "clinic-nellore", name: "H&H Dental Nellore", city: "Nellore", region: "Andhra Pradesh", address: "Magunta Layout, Nellore 524003", phone: "+91 98765 11008", mapUrl: "https://maps.google.com/?q=Nellore", imageUrl: "https://images.unsplash.com/photo-1580281657527-47f249e8f4df?auto=format&fit=crop&w=1200&q=80" }
+  { id: "clinic-kondapur", name: "H&H Kondapur", city: "Hyderabad", region: "Telangana", address: "Plot 45, Botanical Garden Road, Kondapur, Hyderabad 500084", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Kondapur+Hyderabad", imageUrl: "https://images.unsplash.com/photo-1631217868264-e6b90bb7e133?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-manikonda", name: "H&H Manikonda", city: "Hyderabad", region: "Telangana", address: "Lanco Hills Road, Manikonda, Hyderabad 500089", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Manikonda+Hyderabad", imageUrl: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-tirupati", name: "H&H Tirupati", city: "Tirupati", region: "Andhra Pradesh", address: "Air Bypass Road, Tirupati 517501", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Tirupati", imageUrl: "https://images.unsplash.com/photo-1643297654416-0571c5a42199?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-nagari", name: "H&H Nagari", city: "Nagari", region: "Andhra Pradesh", address: "Main Road, Nagari 517590", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Nagari", imageUrl: "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-eluru", name: "H&H Eluru", city: "Eluru", region: "Andhra Pradesh", address: "Powerpet, Eluru 534002", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Eluru", imageUrl: "https://images.unsplash.com/photo-1629904853716-f0bc54eea481?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-ongole", name: "H&H Ongole", city: "Ongole", region: "Andhra Pradesh", address: "Kurnool Road, Ongole 523001", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Ongole", imageUrl: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a41?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-vijayawada", name: "H&H Vijayawada", city: "Vijayawada", region: "Andhra Pradesh", address: "Benz Circle, Vijayawada 520010", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Vijayawada", imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-jangareddygudem", name: "H&H Jangareddygudem", city: "Jangareddygudem", region: "Andhra Pradesh", address: "Main Road, Jangareddygudem 534447", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Jangareddygudem", imageUrl: "https://images.unsplash.com/photo-1580281657527-47f249e8f4df?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-tadepalligudem", name: "H&H Tadepalligudem", city: "Tadepalligudem", region: "Andhra Pradesh", address: "KN Road, Tadepalligudem 534101", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Tadepalligudem", imageUrl: "https://images.unsplash.com/photo-1631217868264-e6b90bb7e133?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-badvel", name: "H&H Badvel", city: "Badvel", region: "Andhra Pradesh", address: "Main Road, Badvel 516227", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Badvel", imageUrl: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-guntur", name: "H&H Guntur", city: "Guntur", region: "Andhra Pradesh", address: "Brodipet, Guntur 522002", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Guntur", imageUrl: "https://images.unsplash.com/photo-1643297654416-0571c5a42199?auto=format&fit=crop&w=1200&q=80" },
+  { id: "clinic-bhimavaram", name: "H&H Bhimavaram", city: "Bhimavaram", region: "Andhra Pradesh", address: "Main Road, Bhimavaram 534201", phone: "+91 97033 34624", mapUrl: "https://maps.google.com/?q=Bhimavaram", imageUrl: "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1200&q=80" },
 ];
 
 export const appointments = [];
@@ -161,7 +184,7 @@ export const BEFORE_AFTER_CASES = [
 
 export const SITE_STATS = [
   { value: "15K+", label: "smiles elevated" },
-  { value: "8", label: "premium clinics" },
+  { value: "12", label: "premium clinics" },
   { value: "24h", label: "appointment response" },
   { value: "4.9", label: "patient satisfaction" }
 ];

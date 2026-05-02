@@ -52,6 +52,8 @@ const translations: Record<Language, Record<string, string>> = {
     confirmed: "Confirmed",
     completed: "Completed",
     cancelled: "Cancelled",
+    feedback: "Feedback",
+    confirmAppointment: "Confirm Appointment",
     
     // Appointments
     patientDetails: "Patient Intelligence",
@@ -171,6 +173,8 @@ const translations: Record<Language, Record<string, string>> = {
     confirmed: "ధృవీకరించబడింది",
     completed: "పూర్తయింది",
     cancelled: "రద్దు చేయబడింది",
+    feedback: "అభిప్రాయం",
+    confirmAppointment: "అపాయింట్‌మెంట్ నిర్ధారించండి",
     
     // Appointments
     patientDetails: "రోగి సమాచారం",

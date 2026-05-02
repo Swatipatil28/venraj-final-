@@ -108,7 +108,7 @@ export function FloatingSelect(props: SelectHTMLAttributes<HTMLSelectElement> & 
           }}
           className="w-full bg-transparent px-4 py-4 text-text-primary outline-none appearance-none text-sm"
         >
-          <option value="" className="bg-sidebar-bg">Select Option</option>
+          <option value="" className="bg-sidebar-bg"></option>
           {options.map(opt => (
             <option key={opt.value} value={opt.value} className="bg-sidebar-bg">{opt.label}</option>
           ))}

@@ -10,6 +10,7 @@ const {
   getAppointments,
   getAppointmentById,
   updateAppointment,
+  confirmAppointment,
   deleteAppointment,
   getAppointmentStats,
   getWhatsAppLinks,
@@ -58,6 +59,7 @@ router.get("/appointments", protect, getAppointments);
 router.get("/appointments/:id", protect, getAppointmentById);
 router.get("/appointments/:id/whatsapp", protect, getWhatsAppLinks);
 router.put("/appointments/:id", protect, updateAppointmentRules, validate, updateAppointment);
+router.put("/appointments/:id/confirm", protect, confirmAppointment);
 router.patch("/appointments/:id", protect, updateAppointmentRules, validate, updateAppointment);
 router.delete("/appointments/:id", protect, deleteAppointment);
 
@@ -88,5 +90,21 @@ router.delete("/testimonials/:id", protect, deleteTestimonial);
 // ── REVIEWS ─────────────────────────────────────────────
 router.get("/reviews", protect, getReviews);
 router.patch("/reviews/:id/approve", protect, approveReview);
+
+// ── UPLOADS ─────────────────────────────────────────────
+const upload = require("../middlewares/upload.middleware");
+router.post("/upload", protect, upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "Please upload a file" });
+  }
+  const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  res.status(200).json({
+    success: true,
+    data: {
+      url: fileUrl,
+      filename: req.file.filename,
+    },
+  });
+});
 
 module.exports = router;

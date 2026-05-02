@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
-import ThemeSwitcher from "./ThemeSwitcher";
-
 function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
 
@@ -19,15 +17,14 @@ function LanguageToggle() {
             key={item.id}
             type="button"
             onClick={() => setLanguage(item.id)}
-            className={`relative rounded-full px-3 py-2 text-xs font-semibold transition ${
-              active ? "text-[#130f0a]" : "text-[rgba(245,238,227,0.72)]"
-            }`}
+            className={`relative rounded-full px-3 py-2 text-xs font-semibold transition ${active ? "text-white" : "text-[var(--muted)]"
+              }`}
           >
             {active && (
               <motion.span
                 layoutId="lang-toggle"
                 className="absolute inset-0 rounded-full"
-                style={{ background: "linear-gradient(135deg, var(--gold-soft), var(--gold))" }}
+                style={{ background: "var(--primary)" }}
               />
             )}
             <span className="relative z-10">{item.label}</span>
@@ -60,24 +57,23 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
       <div
-        className={`container-shell transition-all duration-300 ${
-          scrolled ? "glass-panel rounded-[28px] py-3" : "py-2"
-        }`}
+        className={`container-shell transition-all duration-300 ${scrolled ? "glass-panel rounded-[28px] py-3" : "py-2"
+          }`}
       >
         <div className="flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3">
             <div
-              className="flex h-11 w-11 items-center justify-center rounded-full"
+              className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full"
               style={{
-                background: "linear-gradient(135deg, rgba(216,180,106,0.2), rgba(211,154,149,0.16))",
-                border: "1px solid rgba(240,214,156,0.22)",
+                background: "rgba(46, 134, 171, 0.1)",
+                border: "1px solid rgba(46, 134, 171, 0.2)",
               }}
             >
-              <span className="font-['Cinzel'] text-sm text-gradient">H&H</span>
+              <span className="font-['Cinzel'] text-[10px] sm:text-sm text-gradient">H&H</span>
             </div>
             <div>
-              <p className="font-['Cinzel'] text-sm tracking-[0.18em] text-[rgba(245,238,227,0.92)]">H&H Dental</p>
-              <p className="text-xs text-[rgba(245,238,227,0.52)]">Premium smile care</p>
+              <p className="font-['Cinzel'] text-xs sm:text-sm tracking-[0.18em] text-[var(--text)]">H&H Dental</p>
+              <p className="hidden sm:block text-[10px] text-[var(--muted)]">Excellence in every smile</p>
             </div>
           </Link>
 
@@ -87,7 +83,7 @@ export default function Navbar() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `text-sm transition ${isActive ? "text-[var(--gold-soft)]" : "text-[rgba(245,238,227,0.76)] hover:text-white"}`
+                  `text-sm transition ${isActive ? "text-[var(--primary)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`
                 }
               >
                 {item.label}
@@ -95,22 +91,21 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <ThemeSwitcher />
+          <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
-            <Link to="/book-appointment" className="cta-primary hidden sm:inline-flex">
+            <Link to="/book-appointment" className="cta-primary hidden md:inline-flex">
               {t("nav.book")}
             </Link>
             <button
               type="button"
               onClick={() => setOpen((prev) => !prev)}
-              className="glass-panel inline-flex h-11 w-11 items-center justify-center rounded-full lg:hidden"
+              className="glass-panel inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full lg:hidden"
               aria-label="Toggle navigation"
             >
-              <span className="space-y-1.5">
-                <span className="block h-0.5 w-5 rounded-full bg-[var(--text)]" />
-                <span className="block h-0.5 w-5 rounded-full bg-[var(--text)]" />
-                <span className="block h-0.5 w-5 rounded-full bg-[var(--text)]" />
+              <span className="space-y-1 sm:space-y-1.5">
+                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
+                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
+                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
               </span>
             </button>
           </div>
@@ -124,20 +119,22 @@ export default function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden lg:hidden"
             >
-              <div className="mt-4 space-y-3 border-t border-[rgba(240,214,156,0.14)] pt-4">
+              <div className="mt-4 space-y-2 border-t border-[var(--line)] pt-4 pb-2">
                 {navItems.map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     onClick={() => setOpen(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm text-[rgba(245,238,227,0.8)] transition hover:bg-[rgba(255,255,255,0.04)]"
+                    className="block rounded-xl px-4 py-3 text-sm font-medium text-[var(--muted)] transition hover:bg-[rgba(46,134,171,0.05)] hover:text-[var(--text)]"
                   >
                     {item.label}
                   </NavLink>
                 ))}
-                <Link to="/book-appointment" onClick={() => setOpen(false)} className="cta-primary flex w-full">
-                  {t("nav.book")}
-                </Link>
+                <div className="pt-2">
+                  <Link to="/book-appointment" onClick={() => setOpen(false)} className="cta-primary flex w-full justify-center">
+                    {t("nav.book")}
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}

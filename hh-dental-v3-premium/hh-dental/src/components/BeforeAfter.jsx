@@ -36,11 +36,11 @@ export default function BeforeAfter() {
             ))}
           </div>
 
-          <motion.div layout className="glass-panel rounded-[32px] p-5 md:p-6">
-            <div className="relative overflow-hidden rounded-[26px]">
-              <img src={activeCase.before} alt={`${activeCase.label} before`} className="h-[460px] w-full object-cover" />
+          <motion.div layout className="glass-panel rounded-[24px] sm:rounded-[32px] p-4 sm:p-5 md:p-6">
+            <div className="relative overflow-hidden rounded-[20px] sm:rounded-[26px]">
+              <img src={activeCase.before} alt={`${activeCase.label} before`} className="h-[300px] sm:h-[400px] md:h-[460px] w-full object-cover" />
               <div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${position}%` }}>
-                <img src={activeCase.after} alt={`${activeCase.label} after`} className="h-[460px] w-[900px] max-w-none object-cover" />
+                <img src={activeCase.after} alt={`${activeCase.label} after`} className="h-[300px] sm:h-[400px] md:h-[460px] w-full max-w-none object-cover" style={{ width: `${100 / (position / 100)}%` }} />
               </div>
               <div className="absolute inset-y-0" style={{ left: `calc(${position}% - 1px)` }}>
                 <div className="h-full w-0.5 bg-white/80" />
@@ -58,7 +58,7 @@ export default function BeforeAfter() {
               max="95"
               value={position}
               onChange={(event) => setPosition(Number(event.target.value))}
-              className="mt-6 w-full accent-[var(--gold)]"
+              className="mt-6 w-full accent-[var(--primary)]"
             />
           </motion.div>
         </div>

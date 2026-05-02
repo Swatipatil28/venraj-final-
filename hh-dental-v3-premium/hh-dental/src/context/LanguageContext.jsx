@@ -21,14 +21,14 @@ const translations = {
       backToHome: "Back to Home",
       loading: "Loading",
       choose: "Choose",
-      savedLocal: "Saved locally. We will sync your appointment once backend is available.",
+      savedLocal: "Saved locally. We will sCURATED & AFFORDABLE DENTAL EXPERIENCEync your appointment once backend is available.",
       bookedSuccess: "Appointment request submitted successfully.",
     },
     home: {
-      heroEyebrow: "Luxury Dental Experience",
-      heroTitle: "Transform Your Smile with Expert Dental Care",
+      heroEyebrow: "LuxCURATED & AFFORDABLE DENTAL EXPERIENCEury Dental Experience",
+      heroTitle: "Smart Dentistry. Curated Treatments. Affordable Excellence.",
       heroBody:
-        "Private consultations, advanced dentistry, and premium aesthetic care designed to help every visit feel calm, elevated, and worth booking.",
+        "Benefit from fully personalized care, precision dentistry, and effective solutions—all while remaining affordable. Discover a stress-free dental journey that is designed for you.Private consultations, advanced dentistry, and premium aesthetic care designed to help every visit feel calm, elevated, and worth booking.",
       heroSecondary: "Explore Services",
       sectionServices: "Signature Treatments",
       sectionDoctors: "Meet Your Specialists",
@@ -84,6 +84,8 @@ const translations = {
       other: "Other",
       successTitle: "Your appointment request is in.",
       successBody: "Our concierge team will call you shortly to confirm the ideal clinic, doctor, and timing.",
+      pendingStatus: "⏳ Pending Confirmation",
+      pendingBody: "Your appointment is pending confirmation. Our team will contact you shortly to confirm your booking.",
     },
     errors: {
       required: "This field is required.",
@@ -176,6 +178,8 @@ const translations = {
       other: "ఇతరులు",
       successTitle: "మీ అపాయింట్‌మెంట్ అభ్యర్థన పంపబడింది.",
       successBody: "మీకు సరైన క్లినిక్, డాక్టర్, సమయం నిర్ధారించడానికి మా టీమ్ త్వరలో కాల్ చేస్తుంది.",
+      pendingStatus: "⏳ నిర్ధారణ పెండింగ్‌లో ఉంది",
+      pendingBody: "మీ అపాయింట్‌మెంట్ నిర్ధారణ పెండింగ్‌లో ఉంది. మా టీమ్ త్వరలో మీకు కాల్ చేస్తుంది.",
     },
     errors: {
       required: "ఈ ఫీల్డ్ తప్పనిసరి.",

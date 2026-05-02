@@ -5,23 +5,42 @@ export function useApiResource(fetcher, fallbackData = [], deps = []) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (ignore = false) => {
     setLoading(true);
     setError(null);
     try {
       const result = await fetcher();
-      setData(Array.isArray(result) ? result : []);
+      if (!ignore) {
+        // Ensure data is an array just in case the API returns { success: true, data: [...] }
+        const parsedData = Array.isArray(result) 
+          ? result 
+          : (result?.data ? result.data : []);
+        setData(parsedData);
+      }
     } catch (err) {
-      setData([]);
-      setError(err);
+      if (!ignore) {
+        setData([]);
+        setError(err);
+      }
     } finally {
-      setLoading(false);
+      if (!ignore) {
+        setLoading(false);
+      }
     }
   }, deps); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    load();
+    let ignore = false;
+    
+    // Pass ignore flag to prevent state updates if unmounted
+    load(ignore);
+
+    return () => {
+      ignore = true;
+    };
   }, [load]);
 
-  return { data, loading, error, reload: load };
+  const reload = () => load(false);
+
+  return { data, loading, error, reload };
 }

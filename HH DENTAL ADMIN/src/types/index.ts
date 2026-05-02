@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
+export type AppointmentStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'feedback';
 
 export interface AppointmentDTO {
   _id: string;
@@ -36,7 +36,7 @@ export interface ClinicDTO {
   name: string;
   city: string;
   state: string;
-  address: string;
+  area: string;
   phone: string;
   email: string;
   image?: string;
@@ -48,7 +48,7 @@ export interface DoctorDTO {
   _id: string;
   name: string;
   image?: string;
-  specialization: Specialization;
+  specialization: Specialization[]; // Array — doctors can have multiple specializations
   experience: number;
   qualifications: string;
   assignedClinicIds: string[];
@@ -72,6 +72,7 @@ export interface User {
   id: string;
   email: string;
   role: 'admin';
+  name?: string;
 }
 
 export interface AuthState {

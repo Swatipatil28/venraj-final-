@@ -4,22 +4,22 @@ const clinicSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Clinic name is required"],
       trim: true,
+      default: "",
     },
     city: {
       type: String,
-      required: [true, "City is required"],
       trim: true,
+      default: "",
     },
     state: {
       type: String,
-      required: [true, "State is required"],
+      required: [true, "Branch/State is required"],
       trim: true,
     },
-    address: {
+    area: {
       type: String,
-      required: [true, "Address is required"],
+      required: [true, "Area is required"],
       trim: true,
     },
     phone: {

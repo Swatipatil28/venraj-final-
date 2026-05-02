@@ -14,21 +14,21 @@ interface StatCardProps {
     value: number;
     isUp: boolean;
   };
-  color?: 'gold' | 'copper' | 'blue' | 'green';
+  color?: 'accent' | 'copper' | 'blue' | 'green';
 }
 
 const colorMap = {
-  gold: 'text-accent bg-accent/10 border-accent/20',
-  copper: 'text-brand-gold bg-brand-gold/10 border-brand-gold/20',
+  accent: 'text-accent bg-accent/10 border-accent/20',
+  copper: 'text-brand-accent bg-brand-accent/10 border-brand-accent/20',
   blue: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
   green: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
 };
 
-export default function StatCard({ title, value, icon: Icon, trend, color = 'gold' }: StatCardProps) {
+export default function StatCard({ title, value, icon: Icon, trend, color = 'accent' }: StatCardProps) {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className={`glass-panel p-6 flex flex-col justify-between h-40 relative overflow-hidden group border-l-2 ${color === 'gold' ? 'border-accent' : color === 'copper' ? 'border-brand-gold/50' : 'border-border-subtle'}`}
+      className={`glass-panel p-6 flex flex-col justify-between h-40 relative overflow-hidden group border-l-2 ${color === 'accent' ? 'border-accent' : color === 'copper' ? 'border-brand-accent/50' : 'border-border-subtle'}`}
     >
       <div className="flex flex-col gap-1">
         <h3 className="text-[10px] text-text-muted uppercase tracking-widest font-bold">{title}</h3>

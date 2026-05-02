@@ -20,6 +20,7 @@ import { AppointmentDTO, AppointmentStatus, ClinicDTO, DoctorDTO, ServiceDTO } f
 import { AppointmentService, ClinicService, DoctorService, ServiceService } from '../services/adminService';
 import { useToast } from '../components/Toast';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { useSearchStore } from '../store/useSearchStore';
 import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/FloatingInput';
 
 const statusStyles: Record<AppointmentStatus, string> = {
@@ -27,6 +28,7 @@ const statusStyles: Record<AppointmentStatus, string> = {
   confirmed: 'bg-blue-500/10 text-blue-500 border-blue-500/30',
   completed: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30',
   cancelled: 'bg-rose-500/10 text-rose-500 border-rose-500/30',
+  feedback: 'bg-purple-500/10 text-purple-500 border-purple-500/30',
 };
 
 const emptyAppointment: Partial<AppointmentDTO> = {
@@ -58,7 +60,6 @@ export default function AppointmentsPage() {
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentDTO | null>(null);
   const [patientHistory, setPatientHistory] = useState<AppointmentDTO[]>([]);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'All' | 'Today' | 'Upcoming' | 'Completed' | 'Cancelled'>('All');
   const [formData, setFormData] = useState<Partial<AppointmentDTO>>(emptyAppointment);
 
@@ -100,11 +101,40 @@ export default function AppointmentsPage() {
     }
   };
 
+  // Silent background refresh — keeps appointment statuses in sync without full reload
+  const refreshAppointments = async () => {
+    try {
+      const appointmentsData = await AppointmentService.getAppointments();
+      setAppointments(appointmentsData);
+      // Also refresh the selected appointment detail if one is open
+      setSelectedAppointment((prev) => {
+        if (!prev) return null;
+        return appointmentsData.find((a) => a._id === prev._id) ?? prev;
+      });
+    } catch {
+      // Silently ignore polling errors — don't spam toasts
+    }
+  };
+
+  // Poll every 12 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void refreshAppointments();
+    }, 12000);
+    return () => clearInterval(interval);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
+
   const filteredAppointments = useMemo(() => {
     return appointments.filter((appointment) => {
+      const query = globalSearchQuery.toLowerCase();
       const matchesSearch =
-        appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        appointment.phone.includes(searchTerm);
+        appointment.patientName.toLowerCase().includes(query) ||
+        appointment.phone.includes(query) ||
+        (appointment.clinicName || '').toLowerCase().includes(query) ||
+        (appointment.serviceName || '').toLowerCase().includes(query);
 
       if (!matchesSearch) {
         return false;
@@ -112,12 +142,13 @@ export default function AppointmentsPage() {
 
       const today = new Date().toISOString().split('T')[0];
       if (activeTab === 'Today') return appointment.preferredDate === today;
-      if (activeTab === 'Upcoming') return appointment.preferredDate > today && !['completed', 'cancelled'].includes(appointment.status);
+      if (activeTab === 'Upcoming') return appointment.preferredDate > today && !['completed', 'cancelled', 'feedback'].includes(appointment.status);
       if (activeTab === 'Completed') return appointment.status === 'completed';
       if (activeTab === 'Cancelled') return appointment.status === 'cancelled';
+      if (activeTab === 'Feedback') return appointment.status === 'feedback';
       return true;
     });
-  }, [activeTab, appointments, searchTerm]);
+  }, [activeTab, appointments, globalSearchQuery]);
 
   const isReturningPatient = (phone: string, currentId: string) =>
     appointments.some((appointment) => appointment.phone === phone && appointment._id !== currentId);
@@ -164,7 +195,7 @@ export default function AppointmentsPage() {
     try {
       const updated = await AppointmentService.updateStatus(id, status);
       mergeAppointment(updated);
-      showToast('Appointment status updated');
+      showToast(`Appointment ${status} successfully`);
     } catch (error) {
       setAppointments(previousAppointments);
       setSelectedAppointment(previousSelectedAppointment);
@@ -172,8 +203,23 @@ export default function AppointmentsPage() {
     }
   };
 
+  const handleConfirm = async (id: string) => {
+    try {
+      const updated = await AppointmentService.confirm(id);
+      mergeAppointment(updated);
+      showToast('Appointment confirmed successfully');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to confirm appointment', 'error');
+    }
+  };
+
   const handleWhatsApp = (appointment: AppointmentDTO) => {
-    const message = `Hello ${appointment.patientName}, regarding your appointment at H&H Dental Services for ${appointment.serviceName || appointment.service}. Status: ${appointment.status}.`;
+    let message = `Hello ${appointment.patientName}, regarding your appointment at H&H Dental Services for ${appointment.serviceName || appointment.service}. Status: ${appointment.status}.`;
+    
+    if (appointment.status === 'feedback') {
+      message = `Hello ${appointment.patientName}, thank you for choosing H&H Dental Services! We hope you had a great experience. Could you please take a moment to give us your valuable feedback? It helps us serve you better!`;
+    }
+
     window.open(`https://wa.me/${appointment.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -203,23 +249,25 @@ export default function AppointmentsPage() {
               type="text"
               placeholder={t('searchPlaceholder')}
               className="w-64 rounded-xl border border-border-subtle bg-sidebar-bg py-2.5 pl-12 pr-4 text-sm text-text-secondary shadow-xl transition-all focus:border-accent/50 focus:outline-none"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
+              value={globalSearchQuery}
+              onChange={(event) => setGlobalSearchQuery(event.target.value)}
             />
           </div>
 
-          <div className="flex rounded-xl border border-border-subtle bg-sidebar-bg p-1 shadow-xl">
-            {(['All', 'Today', 'Upcoming', 'Completed', 'Cancelled'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`rounded-lg px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
-                  activeTab === tab ? 'bg-accent text-bg-main shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+          <div className="flex w-full overflow-x-auto rounded-xl border border-border-subtle bg-sidebar-bg p-1 shadow-xl sm:w-auto custom-scrollbar">
+            <div className="flex min-w-max">
+              {(['All', 'Today', 'Upcoming', 'Completed', 'Cancelled', 'Feedback'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`rounded-lg px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    activeTab === tab ? 'bg-accent text-bg-main shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -281,7 +329,17 @@ export default function AppointmentsPage() {
                       <span className={`status-badge inline-block min-w-[90px] text-center ${statusStyles[appointment.status]}`}>{t(appointment.status)}</span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-accent">{t('viewDetails')}</span>
+                      <div className="flex items-center justify-end gap-3">
+                        {appointment.status === 'pending' && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); void handleConfirm(appointment._id); }}
+                            className="flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-blue-400 transition-all hover:bg-blue-500/25"
+                          >
+                            <CheckCircle2 size={11} /> Confirm
+                          </button>
+                        )}
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-accent">{t('viewDetails')}</span>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -307,13 +365,24 @@ export default function AppointmentsPage() {
               className="w-full max-w-4xl overflow-hidden rounded-3xl border border-border-subtle bg-sidebar-bg shadow-2xl"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="flex items-center justify-between bg-accent px-8 py-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-bg-main">{selectedAppointment.patientName}</h3>
-                  <p className="text-sm text-bg-main/70">{selectedAppointment.phone}</p>
+              <div className="flex items-center justify-between bg-bg-main border-b border-border-subtle px-8 py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-text-primary tracking-tight">{selectedAppointment.patientName}</h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-text-muted">{selectedAppointment.phone}</span>
+                      <span className="w-1 h-1 rounded-full bg-border-subtle"></span>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${statusStyles[selectedAppointment.status].split(' ')[1]}`}>
+                        {selectedAppointment.status}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <button onClick={() => setSelectedAppointment(null)} className="rounded-full bg-bg-main/10 p-2 text-bg-main">
-                  <X size={22} />
+                <button onClick={() => setSelectedAppointment(null)} className="rounded-xl bg-text-primary/5 p-2.5 text-text-muted hover:text-accent transition-all">
+                  <X size={20} />
                 </button>
               </div>
 
@@ -321,13 +390,31 @@ export default function AppointmentsPage() {
                 <div className="space-y-6">
                   <div className="glass-panel p-5">
                     <h4 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">{t('patientDetails')}</h4>
-                    <div className="space-y-3 text-sm text-text-secondary">
-                      <p>Age: <span className="text-text-primary">{selectedAppointment.age || '-'}</span></p>
-                      <p>Gender: <span className="text-text-primary">{selectedAppointment.gender || 'Other'}</span></p>
-                      <p>Clinic: <span className="text-text-primary">{selectedAppointment.clinicName || selectedAppointment.clinic || '-'}</span></p>
-                      <p>Service: <span className="text-text-primary">{selectedAppointment.serviceName || selectedAppointment.service || '-'}</span></p>
-                      <p>Date: <span className="text-text-primary">{selectedAppointment.preferredDate}</span></p>
-                      <p>Status: <span className="text-text-primary">{selectedAppointment.status}</span></p>
+                    <div className="grid grid-cols-2 gap-y-4 text-sm">
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Age</p>
+                        <p className="text-text-primary font-medium">{selectedAppointment.age || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Gender</p>
+                        <p className="text-text-primary font-medium">{selectedAppointment.gender || 'Other'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Clinic</p>
+                        <p className="text-text-primary font-medium">{selectedAppointment.clinicName || selectedAppointment.clinic || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Service</p>
+                        <p className="text-text-primary font-medium">{selectedAppointment.serviceName || selectedAppointment.service || '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Date</p>
+                        <p className="text-text-primary font-medium">{selectedAppointment.preferredDate}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted uppercase font-bold tracking-widest mb-1">Clinical Status</p>
+                        <p className="text-text-primary font-medium capitalize">{selectedAppointment.status}</p>
+                      </div>
                     </div>
                   </div>
 
@@ -383,18 +470,26 @@ export default function AppointmentsPage() {
 
               <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle bg-sidebar-bg/95 p-6">
                 <div className="flex flex-wrap items-center gap-2">
+                  {selectedAppointment.status === 'pending' && (
+                    <button
+                      onClick={() => void handleConfirm(selectedAppointment._id)}
+                      className="flex items-center gap-2 rounded-xl border border-blue-500 bg-blue-500/20 px-4 py-2 text-[10px] font-bold uppercase text-blue-500 transition-all hover:bg-blue-500/30"
+                    >
+                      <CheckCircle2 size={14} /> {t('confirmAppointment') || 'Confirm Appointment'}
+                    </button>
+                  )}
                   <button
-                    onClick={() => void handleUpdateStatus(selectedAppointment._id, 'confirmed')}
+                    onClick={() => void handleUpdateStatus(selectedAppointment._id, 'feedback')}
                     className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-[10px] font-bold uppercase transition-all ${
-                      selectedAppointment.status === 'confirmed' ? 'border-blue-500 bg-blue-500/20 text-blue-500' : 'border-border-subtle text-text-muted'
+                      selectedAppointment.status === 'feedback' ? 'border-purple-500 bg-purple-500/20 text-purple-500' : 'border-border-subtle text-text-muted hover:border-purple-500/50 hover:text-purple-400'
                     }`}
                   >
-                    <CheckCircle2 size={14} /> {t('confirmed')}
+                    <MessageCircle size={14} /> Request Feedback
                   </button>
                   <button
                     onClick={() => void handleUpdateStatus(selectedAppointment._id, 'completed')}
                     className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-[10px] font-bold uppercase transition-all ${
-                      selectedAppointment.status === 'completed' ? 'border-emerald-500 bg-emerald-500/20 text-emerald-500' : 'border-border-subtle text-text-muted'
+                      selectedAppointment.status === 'completed' ? 'border-emerald-500 bg-emerald-500/20 text-emerald-500' : 'border-border-subtle text-text-muted hover:border-emerald-500/50 hover:text-emerald-400'
                     }`}
                   >
                     <CheckCircle2 size={14} /> {t('completed')}

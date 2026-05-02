@@ -2,10 +2,8 @@ const { body } = require("express-validator");
 
 // ── Clinic ────────────────────────────────────────────────
 const clinicRules = [
-  body("name").trim().notEmpty().withMessage("Clinic name is required"),
-  body("city").trim().notEmpty().withMessage("City is required"),
-  body("state").trim().notEmpty().withMessage("State is required"),
-  body("address").trim().notEmpty().withMessage("Address is required"),
+  body("state").trim().notEmpty().withMessage("Branch (State) is required"),
+  body("area").trim().notEmpty().withMessage("Area is required"),
   body("phone")
     .trim()
     .notEmpty().withMessage("Phone is required")

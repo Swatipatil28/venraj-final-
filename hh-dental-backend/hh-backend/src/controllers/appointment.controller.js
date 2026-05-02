@@ -76,6 +76,24 @@ const createAppointment = async (req, res, next) => {
   }
 };
 
+// GET /api/appointments/status?ref=HH-XXXX
+const getAppointmentStatus = async (req, res, next) => {
+  try {
+    const { ref } = req.query;
+    if (!ref) return sendError(res, "Appointment reference is required", 400);
+
+    const appointment = await Appointment.findOne({ appointmentRef: ref });
+    if (!appointment) return sendError(res, "Appointment not found", 404);
+
+    return sendSuccess(res, {
+      appointmentRef: appointment.appointmentRef,
+      status: appointment.status,
+    }, "Status retrieved successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ─────────────────────────────────────────────────────────
 // ADMIN
 // ─────────────────────────────────────────────────────────
@@ -224,6 +242,34 @@ const updateAppointment = async (req, res, next) => {
   }
 };
 
+// PUT /api/admin/appointments/:id/confirm
+const confirmAppointment = async (req, res, next) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    if (!appointment) return sendError(res, "Appointment not found", 404);
+
+    appointment.status = APPOINTMENT_STATUS.CONFIRMED;
+    appointment.confirmedDate = new Date();
+    
+    await appointment.save();
+
+    await appointment.populate([
+      { path: "clinicId", select: "name city" },
+      { path: "doctorId", select: "name specialization" },
+      { path: "serviceId", select: "title" },
+    ]);
+
+    // Send email on status change (optional, but good for confirmation)
+    sendStatusUpdateEmail(appointment, appointment.clinicId).catch((err) =>
+      console.warn("Confirmation email failed:", err.message)
+    );
+
+    return sendSuccess(res, appointment, "Appointment confirmed successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
 // DELETE /api/admin/appointments/:id
 const deleteAppointment = async (req, res, next) => {
   try {
@@ -289,9 +335,11 @@ const getWhatsAppLinks = async (req, res, next) => {
 
 module.exports = {
   createAppointment,
+  getAppointmentStatus,
   getAppointments,
   getAppointmentById,
   updateAppointment,
+  confirmAppointment,
   deleteAppointment,
   getAppointmentStats,
   getWhatsAppLinks,

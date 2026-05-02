@@ -1,7 +1,7 @@
 export function LoadingSpinner({ center = true }) {
   return (
     <div className={center ? "flex justify-center items-center py-20" : "inline-flex"}>
-      <div className="w-8 h-8 rounded-full border-2 border-gold/20 border-t-gold animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-primary/20 border-t-gold animate-spin" />
     </div>
   );
 }
@@ -21,7 +21,7 @@ export function ErrorMessage({ message, onRetry }) {
   return (
     <div className="text-center py-16">
       <p className="text-ivory/40 mb-4 font-sans">{message || "Something went wrong."}</p>
-      {onRetry && <button onClick={onRetry} className="btn-ghost text-[10px]">Try again</button>}
+      {onRetry && <button onClick={onRetry} className="btn-secondary text-[10px]">Try again</button>}
     </div>
   );
 }

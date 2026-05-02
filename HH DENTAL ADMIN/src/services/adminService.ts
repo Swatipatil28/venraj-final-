@@ -28,7 +28,7 @@ type BackendDoctor = {
   _id?: string;
   id?: string;
   name: string;
-  specialization: string;
+  specialization: string | string[]; // backend may return string or string[]
   experience: string | number;
   qualifications: string;
   bio?: string;
@@ -64,20 +64,14 @@ type LoginResponse = {
 
 const normalizeStatus = (status?: string): AppointmentStatus => {
   const normalized = (status || 'pending').toLowerCase();
-  if (normalized === 'confirmed' || normalized === 'completed' || normalized === 'cancelled') {
+  if (normalized === 'confirmed' || normalized === 'completed' || normalized === 'cancelled' || normalized === 'feedback') {
     return normalized;
   }
   return 'pending';
 };
 
 const toBackendStatus = (status: AppointmentStatus) => {
-  const map: Record<AppointmentStatus, string> = {
-    pending: 'Pending',
-    confirmed: 'Confirmed',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-  };
-  return map[status];
+  return status;
 };
 
 const mapAppointment = (appointment: BackendAppointment): AppointmentDTO => ({
@@ -106,11 +100,20 @@ const mapAppointment = (appointment: BackendAppointment): AppointmentDTO => ({
   createdAt: appointment.createdAt,
 });
 
+const normalizeSpecialization = (spec: string | string[]): string[] => {
+  if (Array.isArray(spec)) return spec.filter(Boolean);
+  if (typeof spec === 'string' && spec.trim()) {
+    // Handle legacy comma-separated strings
+    return spec.split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+};
+
 const mapDoctor = (doctor: BackendDoctor, clinics: ClinicDTO[]): DoctorDTO => ({
   _id: doctor._id || doctor.id || '',
   name: doctor.name,
   image: doctor.image || doctor.imageUrl || '',
-  specialization: doctor.specialization as DoctorDTO['specialization'],
+  specialization: normalizeSpecialization(doctor.specialization) as DoctorDTO['specialization'],
   experience: typeof doctor.experience === 'string' ? Number.parseInt(doctor.experience, 10) || 0 : doctor.experience || 0,
   qualifications: doctor.qualifications,
   assignedClinicIds: (doctor.clinics || [])
@@ -169,6 +172,10 @@ export const AppointmentService = {
     });
     return mapAppointment(updated);
   },
+  confirm: async (id: string) => {
+    const updated = await api.put<BackendAppointment, BackendAppointment>(`/admin/appointments/${id}/confirm`);
+    return mapAppointment(updated);
+  },
 };
 
 export const ClinicService = {
@@ -187,7 +194,12 @@ export const DoctorService = {
   create: (data: Partial<DoctorDTO>) =>
     api.post<DoctorDTO, DoctorDTO>('/admin/doctors', {
       name: data.name,
-      specialization: data.specialization,
+      // Always send as array; handle string input gracefully
+      specialization: Array.isArray(data.specialization)
+        ? data.specialization
+        : typeof data.specialization === 'string'
+          ? (data.specialization as string).split(',').map((s) => s.trim()).filter(Boolean)
+          : [],
       experience: `${data.experience || 0} Years`,
       qualifications: data.qualifications,
       bio: data.bio,
@@ -197,7 +209,11 @@ export const DoctorService = {
   update: (id: string, data: Partial<DoctorDTO>) =>
     api.put<DoctorDTO, DoctorDTO>(`/admin/doctors/${id}`, {
       name: data.name,
-      specialization: data.specialization,
+      specialization: Array.isArray(data.specialization)
+        ? data.specialization
+        : typeof data.specialization === 'string'
+          ? (data.specialization as string).split(',').map((s) => s.trim()).filter(Boolean)
+          : [],
       experience: `${data.experience || 0} Years`,
       qualifications: data.qualifications,
       bio: data.bio,
@@ -234,3 +250,21 @@ export const ServiceService = {
     }),
   delete: (id: string) => api.delete<{ success: boolean }, { success: boolean }>(`/admin/services/${id}`),
 };
+
+export const UploadService = {
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const data = await api.post<{ url: string; filename: string }, { url: string; filename: string }>(
+      '/admin/upload',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return data.url;
+  },
+};
+

@@ -44,7 +44,7 @@ export default function ServicesPage() {
                   type="button"
                   onClick={() => setTab(item.id)}
                   className={`rounded-full px-5 py-2.5 text-sm transition ${
-                    active ? "bg-[linear-gradient(135deg,var(--gold-soft),var(--gold))] text-[#130f0a]" : "text-[var(--muted)]"
+                    active ? "bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-[#130f0a]" : "text-[var(--muted)]"
                   }`}
                 >
                   {item.label}

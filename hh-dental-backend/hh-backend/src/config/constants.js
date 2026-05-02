@@ -1,9 +1,10 @@
 module.exports = {
   APPOINTMENT_STATUS: {
-    PENDING:   "Pending",
-    CONFIRMED: "Confirmed",
-    COMPLETED: "Completed",
-    CANCELLED: "Cancelled",
+    PENDING:   "pending",
+    CONFIRMED: "confirmed",
+    COMPLETED: "completed",
+    CANCELLED: "cancelled",
+    FEEDBACK: "feedback",
   },
 
   SERVICE_CATEGORY: {

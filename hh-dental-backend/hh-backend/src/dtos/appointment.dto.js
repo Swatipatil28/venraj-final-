@@ -60,7 +60,7 @@ const createAppointmentRules = [
 const updateAppointmentRules = [
   body("status")
     .optional()
-    .isIn(["Pending", "Confirmed", "Completed", "Cancelled"])
+    .isIn(["pending", "confirmed", "completed", "cancelled", "feedback"])
     .withMessage("Invalid status value"),
 
   body("notes")

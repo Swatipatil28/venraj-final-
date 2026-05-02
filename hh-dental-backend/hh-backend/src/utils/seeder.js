@@ -6,81 +6,131 @@ const Clinic    = require("../models/Clinic");
 const Doctor    = require("../models/Doctor");
 const Service   = require("../models/Service");
 const AdminUser = require("../models/AdminUser");
+const Testimonial = require("../models/Testimonial");
 
 // ── Clinic seed data ──────────────────────────────────────
 const clinicsData = [
-  { name:"H&H Kondapur",      city:"Kondapur",      state:"Telangana",       address:"Plot 45, Kondapur Main Rd, Hyderabad – 500084", phone:"+91 98765 11001", email:"kondapur@hhdental.in"   },
-  { name:"H&H Manikonda",     city:"Manikonda",     state:"Telangana",       address:"Shop 12, Manikonda Junction, Hyderabad – 500089", phone:"+91 98765 11002", email:"manikonda@hhdental.in"  },
-  { name:"H&H Tirupati",      city:"Tirupati",      state:"Andhra Pradesh",  address:"42 RC Road, Tirupati – 517501",                  phone:"+91 98765 11003", email:"tirupati@hhdental.in"   },
-  { name:"H&H Ongole",        city:"Ongole",        state:"Andhra Pradesh",  address:"10 Kurnool Road, Ongole – 523001",               phone:"+91 98765 11004", email:"ongole@hhdental.in"     },
-  { name:"H&H Guntur",        city:"Guntur",        state:"Andhra Pradesh",  address:"88 Brodipet, Guntur – 522002",                   phone:"+91 98765 11005", email:"guntur@hhdental.in"     },
-  { name:"H&H Vijayawada",    city:"Vijayawada",    state:"Andhra Pradesh",  address:"Benz Circle, Vijayawada – 520010",               phone:"+91 98765 11006", email:"vijayawada@hhdental.in" },
-  { name:"H&H Nellore",       city:"Nellore",       state:"Andhra Pradesh",  address:"Grand Trunk Road, Nellore – 524001",             phone:"+91 98765 11007", email:"nellore@hhdental.in"    },
-  { name:"H&H Visakhapatnam", city:"Visakhapatnam", state:"Andhra Pradesh",  address:"Dwaraka Nagar, Vizag – 530016",                  phone:"+91 98765 11008", email:"vizag@hhdental.in"      },
+  // Telangana / Hyderabad
+  { name: "H&H Kondapur", city: "Hyderabad", state: "Telangana", area: "Kondapur", phone: "+91 97033 34624", email: "kondapur@hhdental.in" },
+  { name: "H&H Manikonda", city: "Hyderabad", state: "Telangana", area: "Manikonda", phone: "+91 97033 34624", email: "manikonda@hhdental.in" },
+  // Andhra Pradesh
+  { name: "H&H Tirupati", city: "Tirupati", state: "Andhra Pradesh", area: "Tirupati", phone: "+91 97033 34624", email: "tirupati@hhdental.in" },
+  { name: "H&H Nagari", city: "Nagari", state: "Andhra Pradesh", area: "Nagari", phone: "+91 97033 34624", email: "nagari@hhdental.in" },
+  { name: "H&H Eluru", city: "Eluru", state: "Andhra Pradesh", area: "Eluru", phone: "+91 97033 34624", email: "eluru@hhdental.in" },
+  { name: "H&H Ongole", city: "Ongole", state: "Andhra Pradesh", area: "Ongole", phone: "+91 97033 34624", email: "ongole@hhdental.in" },
+  { name: "H&H Vijayawada", city: "Vijayawada", state: "Andhra Pradesh", area: "Vijayawada", phone: "+91 97033 34624", email: "vijayawada@hhdental.in" },
+  { name: "H&H Jangareddygudem", city: "Jangareddygudem", state: "Andhra Pradesh", area: "Jangareddygudem", phone: "+91 97033 34624", email: "jangareddygudem@hhdental.in" },
+  { name: "H&H Tadepalligudem", city: "Tadepalligudem", state: "Andhra Pradesh", area: "Tadepalligudem", phone: "+91 97033 34624", email: "tadepalligudem@hhdental.in" },
+  { name: "H&H Badvel", city: "Badvel", state: "Andhra Pradesh", area: "Badvel", phone: "+91 97033 34624", email: "badvel@hhdental.in" },
+  { name: "H&H Guntur", city: "Guntur", state: "Andhra Pradesh", area: "Guntur", phone: "+91 97033 34624", email: "guntur@hhdental.in" },
+  { name: "H&H Bhimavaram", city: "Bhimavaram", state: "Andhra Pradesh", area: "Bhimavaram", phone: "+91 97033 34624", email: "bhimavaram@hhdental.in" },
 ];
 
 // ── Service seed data ─────────────────────────────────────
 const servicesData = [
   {
-    title:"Dental Implants", category:"dental", icon:"◈", displayOrder:1,
-    description:"Permanent tooth replacement that looks, feels, and functions like your natural teeth.",
-    benefits:["Lifetime durability","Natural appearance","Preserves jawbone","No adhesives needed"],
-    process:["Initial consultation & X-ray","Implant placement surgery","Osseointegration (healing period)","Abutment & crown fitting","Final review & aftercare"],
+    title: "Dental Check-up", category: "dental", icon: "◈", displayOrder: 1,
+    description: "Comprehensive oral examination to maintain your dental health.",
+    benefits: ["Early detection", "Preventive care", "Personalized advice"],
+    process: ["Clinical examination", "X-ray if needed", "Cleaning recommendation"],
   },
   {
-    title:"Orthodontics & Braces", category:"dental", icon:"◎", displayOrder:2,
-    description:"Comprehensive orthodontic solutions including metal, ceramic, and clear aligner options.",
-    benefits:["Corrects misalignment","Improves bite function","Boosts confidence","Discreet options available"],
-    process:["Orthodontic assessment","Treatment plan creation","Appliance fitting","Regular adjustment visits","Retainer stage"],
+    title: "Smile Correction", category: "dental", icon: "✦", displayOrder: 2,
+    description: "Transform your smile with our advanced correction techniques.",
+    benefits: ["Enhanced aesthetics", "Boosted confidence", "Improved function"],
+    process: ["Smile analysis", "Treatment planning", "Procedure execution"],
   },
   {
-    title:"Root Canal Treatment", category:"dental", icon:"✦", displayOrder:3,
-    description:"Pain-free, precision root canal therapy to save infected teeth using advanced rotary technology.",
-    benefits:["Eliminates tooth pain","Saves natural tooth","Single-visit option","High success rate"],
-    process:["Diagnosis & X-ray","Local anaesthesia","Pulp removal & cleaning","Canal filling & sealing","Crown placement"],
+    title: "Dental Implants", category: "dental", icon: "◈", displayOrder: 3,
+    description: "Permanent tooth replacement that looks, feels, and functions like your natural teeth.",
+    benefits: ["Lifetime durability", "Natural appearance", "Preserves jawbone"],
+    process: ["Consultation", "Implant placement", "Healing", "Crown fitting"],
   },
   {
-    title:"Teeth Whitening", category:"dental", icon:"◇", displayOrder:4,
-    description:"Professional in-chair and take-home whitening solutions for a brilliantly bright smile.",
-    benefits:["Up to 8 shades lighter","Fast results","Customised trays","Long-lasting effects"],
-    process:["Shade assessment","Protective gel application","Whitening agent activation","Light treatment session","Aftercare guidance"],
+    title: "Dental Caries Management & Fillings", category: "dental", icon: "◎", displayOrder: 4,
+    description: "Effective treatment for cavities using modern filling materials.",
+    benefits: ["Stops decay", "Restores tooth structure", "Pain relief"],
+    process: ["Decay removal", "Cavity preparation", "Filling placement"],
   },
   {
-    title:"Dental Veneers", category:"dental", icon:"❋", displayOrder:5,
-    description:"Ultra-thin porcelain veneers crafted to perfect your smile's shape, colour, and symmetry.",
-    benefits:["Instant smile makeover","Stain resistant","Minimal tooth prep","Natural translucency"],
-    process:["Consultation & smile design","Tooth preparation","Impression & lab fabrication","Veneer bonding","Final polish & review"],
+    title: "Invisalign & Aligners", category: "dental", icon: "◎", displayOrder: 5,
+    description: "Discreet orthodontic solutions for a straighter smile without braces.",
+    benefits: ["Nearly invisible", "Removable", "Comfortable"],
+    process: ["Digital scan", "3D planning", "Custom aligner wear"],
   },
   {
-    title:"Wisdom Tooth Extraction", category:"dental", icon:"⊕", displayOrder:6,
-    description:"Safe, comfortable removal of problematic wisdom teeth under local or general anaesthesia.",
-    benefits:["Relieves pain & pressure","Prevents infection","Quick recovery","Expert surgical team"],
-    process:["X-ray evaluation","Anaesthesia administration","Surgical extraction","Wound closure","Recovery instructions"],
+    title: "Crowns & Veneers", category: "dental", icon: "❋", displayOrder: 6,
+    description: "Restore and enhance your teeth with custom-crafted crowns and veneers.",
+    benefits: ["Natural look", "Strength", "Stain resistance"],
+    process: ["Tooth prep", "Impression", "Fitting"],
   },
   {
-    title:"Botox & Fillers", category:"aesthetic", icon:"✧", displayOrder:7,
-    description:"FDA-approved botulinum toxin and hyaluronic acid dermal fillers for a youthful, refreshed look.",
-    benefits:["Non-surgical","Immediate results","Minimal downtime","Natural-looking finish"],
-    process:["Facial analysis consultation","Treatment mapping","Precise injection technique","Immediate aftercare","2-week review"],
+    title: "Complete Dentures", category: "dental", icon: "⊕", displayOrder: 7,
+    description: "High-quality dentures for full mouth restoration and function.",
+    benefits: ["Restores chewing", "Natural look", "Comfortable fit"],
+    process: ["Impressions", "Trial fit", "Final delivery"],
   },
   {
-    title:"Laser Skin Resurfacing", category:"aesthetic", icon:"◉", displayOrder:8,
-    description:"Advanced fractional laser treatments to reduce wrinkles, scars, and pigmentation.",
-    benefits:["Stimulates collagen","Reduces fine lines","Evens skin tone","Suitable for all skin types"],
-    process:["Skin type assessment","Pre-treatment skincare","Laser treatment session","Cooling & soothing application","Post-care protocol"],
+    title: "Full Mouth Rehabilitation", category: "dental", icon: "◈", displayOrder: 8,
+    description: "Comprehensive reconstruction of all teeth for health and aesthetics.",
+    benefits: ["Total restoration", "Improved bite", "Aesthetic overhaul"],
+    process: ["Deep analysis", "Phased treatment", "Final restoration"],
   },
   {
-    title:"PRP Therapy", category:"aesthetic", icon:"✺", displayOrder:9,
-    description:"Platelet-rich plasma therapy for facial rejuvenation and hair restoration using your own biology.",
-    benefits:["Natural regeneration","Zero allergic risk","Dual skin & hair use","Long-lasting outcomes"],
-    process:["Blood draw (small sample)","PRP centrifuge processing","Micro-needling preparation","PRP application","Recovery guidance"],
+    title: "Mouth Guards & Oral Appliances", category: "dental", icon: "◇", displayOrder: 9,
+    description: "Custom appliances for sports protection and teeth grinding.",
+    benefits: ["Injury prevention", "Protects enamel", "Better sleep"],
+    process: ["Impression", "Custom fabrication", "Fitting"],
   },
   {
-    title:"Chemical Peels", category:"aesthetic", icon:"◐", displayOrder:10,
-    description:"Medical-grade superficial, medium, and deep peels for radiant, renewed skin.",
-    benefits:["Removes dead skin cells","Improves texture","Reduces pigmentation","Boosts radiance"],
-    process:["Consultation & skin analysis","Pre-peel preparation","Chemical solution application","Neutralisation & removal","Moisturising aftercare"],
+    title: "Pediatric Dentistry", category: "dental", icon: "✦", displayOrder: 10,
+    description: "Specialized dental care for children in a friendly environment.",
+    benefits: ["Child-friendly", "Preventive focus", "Early habit correction"],
+    process: ["Gentle check-up", "Preventive care", "Parent education"],
   },
+  {
+    title: "Head and Neck Trauma, Cysts & Tumors", category: "dental", icon: "⊕", displayOrder: 11,
+    description: "Expert surgical management of complex head and neck conditions.",
+    benefits: ["Expert care", "Advanced techniques", "Compassionate approach"],
+    process: ["Diagnosis", "Surgical planning", "Operation", "Recovery"],
+  },
+  {
+    title: "Facial Aesthetics", category: "aesthetic", icon: "✧", displayOrder: 12,
+    description: "Enhance your natural beauty with our aesthetic facial treatments.",
+    benefits: ["Youthful look", "Balanced features", "Non-surgical options"],
+    process: ["Consultation", "Treatment mapping", "Procedure"],
+  },
+  {
+    title: "Hair Transplant & Other Services", category: "aesthetic", icon: "✺", displayOrder: 13,
+    description: "Advanced hair restoration and various aesthetic enhancements.",
+    benefits: ["Natural hair growth", "Self-confidence", "Expert execution"],
+    process: ["Consultation", "Procedure", "Aftercare"],
+  },
+];
+
+// ── Testimonial seed data ──────────────────────────────────
+const testimonialsData = [
+  {
+    name: "Anita Sharma",
+    treatment: "Smile Correction",
+    quote: "The care I received at H&H Dental was exceptional. My smile transformation is better than I ever imagined!",
+    rating: 5,
+    displayOrder: 1
+  },
+  {
+    name: "Rajesh Kumar",
+    treatment: "Dental Implants",
+    quote: "Professional staff and painless procedure. Highly recommend for anyone looking for quality dental work.",
+    rating: 5,
+    displayOrder: 2
+  },
+  {
+    name: "Priya V.",
+    treatment: "Invisalign",
+    quote: "Smooth process from start to finish. The team is very supportive and the results are amazing.",
+    rating: 4,
+    displayOrder: 3
+  }
 ];
 
 // ── Main seeder ───────────────────────────────────────────
@@ -94,8 +144,13 @@ const seed = async () => {
     Doctor.deleteMany({}),
     Service.deleteMany({}),
     AdminUser.deleteMany({}),
+    Testimonial.deleteMany({}),
   ]);
   console.log("🗑   Cleared existing collections.");
+
+  // Seed testimonials
+  const testimonials = await Testimonial.insertMany(testimonialsData);
+  console.log(`✅  ${testimonials.length} testimonials seeded.`);
 
   // Seed clinics
   const clinicsToInsert = clinicsData.map(c => ({...c, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
@@ -114,40 +169,20 @@ const seed = async () => {
   // Seed doctors with actual clinic references
   const doctorsData = [
     {
-      name:"Dr. Haritha Reddy", specialization:"Prosthodontist", experience:"12 Years",
-      qualifications:"BDS, MDS (Prosthodontics)",
-      bio:"Dr. Haritha specialises in full-mouth rehabilitation and aesthetic smile design with over a decade of expertise.",
-      clinics:[clinicMap["H&H Kondapur"], clinicMap["H&H Manikonda"]],
+      name: "Dr Harshita Akurathi",
+      specialization: ["Prosthodontist", "Implantologist", "Cosmetic Dentist", "Aesthetic Dentist"],
+      experience: "10+ Years",
+      qualifications: "MDS (Prosthodontics)",
+      bio: "Dr. Harshita specializes in dental implants and cosmetic dentistry, bringing smiles back to life.",
+      clinics: [clinicMap["H&H Kondapur"], clinicMap["H&H Manikonda"], clinicMap["H&H Tirupati"]],
     },
     {
-      name:"Dr. Hemanth Kumar", specialization:"Orthodontist", experience:"9 Years",
-      qualifications:"BDS, MDS (Orthodontics)",
-      bio:"Expert in Invisalign and ceramic braces, Dr. Hemanth has transformed over 2,000 smiles across Andhra Pradesh.",
-      clinics:[clinicMap["H&H Guntur"], clinicMap["H&H Vijayawada"]],
-    },
-    {
-      name:"Dr. Sravani Nair", specialization:"Implantologist", experience:"11 Years",
-      qualifications:"BDS, MDS, FICOI (Implants)",
-      bio:"Trained in Switzerland, Dr. Sravani brings world-class dental implant techniques to South India.",
-      clinics:[clinicMap["H&H Tirupati"], clinicMap["H&H Ongole"]],
-    },
-    {
-      name:"Dr. Rajesh Varma", specialization:"Aesthetic Dermatologist", experience:"8 Years",
-      qualifications:"MBBS, MD (Dermatology), FAAD",
-      bio:"Dr. Rajesh is a leading aesthetic specialist offering advanced skin rejuvenation and facial contouring treatments.",
-      clinics:[clinicMap["H&H Kondapur"], clinicMap["H&H Visakhapatnam"]],
-    },
-    {
-      name:"Dr. Priya Anand", specialization:"Endodontist", experience:"7 Years",
-      qualifications:"BDS, MDS (Endodontics)",
-      bio:"Specialising in pain-free root canal therapy, Dr. Priya uses the latest rotary instrumentation technology.",
-      clinics:[clinicMap["H&H Nellore"], clinicMap["H&H Guntur"]],
-    },
-    {
-      name:"Dr. Anil Chandra", specialization:"Oral & Maxillofacial Surgeon", experience:"15 Years",
-      qualifications:"BDS, MDS, FICOMS",
-      bio:"With 15 years of surgical excellence, Dr. Anil is the region's foremost expert in wisdom tooth extractions and jaw surgery.",
-      clinics:[clinicMap["H&H Vijayawada"], clinicMap["H&H Tirupati"]],
+      name: "Dr K Harshith",
+      specialization: ["Oral & Maxillofacial Surgeon", "Cosmetic Dentist", "Aesthetic Dentist"],
+      experience: "8+ Years",
+      qualifications: "MDS (Oral & Maxillofacial Surgery)",
+      bio: "Dr. Harshith is an expert in complex oral surgeries and facial aesthetics.",
+      clinics: [clinicMap["H&H Vijayawada"], clinicMap["H&H Guntur"], clinicMap["H&H Kondapur"]],
     },
   ];
 

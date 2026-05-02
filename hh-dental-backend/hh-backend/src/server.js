@@ -10,7 +10,7 @@ const startServer = async () => {
   await connectDB();
 
   const server = app.listen(PORT, HOST, () => {
-    console.log("H&H Dental Services Backend API");
+    console.log("H&H dental services Backend API");
     console.log(`Server running on http://localhost:${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(`Health: http://localhost:${PORT}/health`);

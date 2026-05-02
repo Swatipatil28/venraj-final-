@@ -91,6 +91,10 @@ const appointmentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isReviewed: {
+      type: Boolean,
+      default: false,
+    },
 
     // ── Meta ────────────────────────────────────────────
     appointmentRef: {

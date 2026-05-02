@@ -21,9 +21,21 @@ function normalizePayload(payload) {
   return payload;
 }
 
+const pendingRequests = new Map();
+
 async function getResource(path) {
-  const res = await api.get(path, requestConfig);
-  return normalizePayload(res.data);
+  if (pendingRequests.has(path)) {
+    return pendingRequests.get(path);
+  }
+
+  const promise = api.get(path, requestConfig)
+    .then((res) => normalizePayload(res.data))
+    .finally(() => {
+      pendingRequests.delete(path);
+    });
+
+  pendingRequests.set(path, promise);
+  return promise;
 }
 
 export const getClinics = () => getResource("/clinics");

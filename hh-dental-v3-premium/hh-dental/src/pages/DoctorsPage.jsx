@@ -39,7 +39,7 @@ export default function DoctorsPage() {
                 type="button"
                 onClick={() => setFilter(item)}
                 className="rounded-full border border-[rgba(240,214,156,0.14)] px-4 py-2 text-sm text-[var(--muted)] transition hover:border-[rgba(240,214,156,0.3)] hover:text-white"
-                style={filter === item ? { background: "linear-gradient(135deg, var(--gold-soft), var(--gold))", color: "#130f0a" } : {}}
+                style={filter === item ? { background: "linear-gradient(135deg, var(--secondary), var(--primary))", color: "#130f0a" } : {}}
               >
                 {item}
               </button>

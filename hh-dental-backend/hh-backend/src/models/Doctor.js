@@ -8,9 +8,12 @@ const doctorSchema = new mongoose.Schema(
       trim: true,
     },
     specialization: {
-      type: String,
-      required: [true, "Specialization is required"],
-      trim: true,
+      type: [String],
+      required: [true, "At least one specialization is required"],
+      validate: {
+        validator: (arr) => Array.isArray(arr) && arr.length > 0,
+        message: "At least one specialization is required",
+      },
     },
     experience: {
       type: String,
@@ -42,6 +45,6 @@ const doctorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-doctorSchema.index({ specialization: 1 });
+doctorSchema.index({ specialization: 1 }); // MongoDB naturally indexes array elements
 
 module.exports = mongoose.model("Doctor", doctorSchema);

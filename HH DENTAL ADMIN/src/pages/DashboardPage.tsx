@@ -90,7 +90,7 @@ export default function DashboardPage() {
           value={loading ? '...' : todayAppointments.length.toLocaleString()} 
           icon={CalendarCheck} 
           trend={{ value: 4.2, isUp: true }}
-          color="gold"
+          color="accent"
         />
         <StatCard 
           title={t('upcomingSchedule')} 
@@ -153,22 +153,22 @@ export default function DashboardPage() {
                   </tr>
                 ) : recentAppointments.map((apt) => (
                   <tr key={apt._id} className="hover:bg-text-primary/[0.02] transition-colors cursor-pointer group" onClick={() => setSelectedAppointment(apt)}>
-                    <td className="px-8 py-5">
+                    <td className="px-4 sm:px-8 py-5">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors">{apt.patientName}</span>
-                        <span className="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">{apt.phone} • {apt.age || '-'} • {apt.gender || 'Other'}</span>
+                        <span className="text-xs sm:text-sm font-medium text-text-primary group-hover:text-accent transition-colors">{apt.patientName}</span>
+                        <span className="text-[9px] sm:text-[10px] text-text-muted uppercase tracking-widest mt-0.5">{apt.phone}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-sm text-text-secondary">{apt.clinicName || apt.clinic || '-'}</td>
-                    <td className="px-8 py-5 text-sm text-text-secondary">{apt.serviceName || apt.service || '-'}</td>
-                    <td className="px-8 py-5 text-sm text-text-secondary">{apt.preferredDate}</td>
-                    <td className="px-8 py-5">
-                      <span className={`status-badge min-w-[80px] text-center inline-block ${statusColors[apt.status as keyof typeof statusColors]}`}>
+                    <td className="hidden md:table-cell px-8 py-5 text-sm text-text-secondary">{apt.clinicName || apt.clinic || '-'}</td>
+                    <td className="px-4 sm:px-8 py-5 text-xs sm:text-sm text-text-secondary">{apt.serviceName || apt.service || '-'}</td>
+                    <td className="hidden lg:table-cell px-8 py-5 text-sm text-text-secondary">{apt.preferredDate}</td>
+                    <td className="px-4 sm:px-8 py-5">
+                      <span className={`status-badge min-w-[70px] sm:min-w-[80px] text-center inline-block ${statusColors[apt.status as keyof typeof statusColors]}`}>
                         {t(apt.status)}
                       </span>
                     </td>
-                    <td className="px-8 py-5 text-right">
-                      <span className="text-accent font-bold text-[10px] uppercase tracking-widest group-hover:underline">{t('viewDetails')}</span>
+                    <td className="px-4 sm:px-8 py-5 text-right">
+                      <span className="text-accent font-bold text-[9px] sm:text-[10px] uppercase tracking-widest group-hover:underline">{t('viewDetails')}</span>
                     </td>
                   </tr>
                 ))}
