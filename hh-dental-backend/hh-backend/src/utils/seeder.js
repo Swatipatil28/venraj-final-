@@ -33,78 +33,91 @@ const servicesData = [
     description: "Comprehensive oral examination to maintain your dental health.",
     benefits: ["Early detection", "Preventive care", "Personalized advice"],
     process: ["Clinical examination", "X-ray if needed", "Cleaning recommendation"],
+    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
   },
   {
     title: "Smile Correction", category: "dental", icon: "✦", displayOrder: 2,
     description: "Transform your smile with our advanced correction techniques.",
     benefits: ["Enhanced aesthetics", "Boosted confidence", "Improved function"],
     process: ["Smile analysis", "Treatment planning", "Procedure execution"],
+    image: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95"
   },
   {
     title: "Dental Implants", category: "dental", icon: "◈", displayOrder: 3,
     description: "Permanent tooth replacement that looks, feels, and functions like your natural teeth.",
     benefits: ["Lifetime durability", "Natural appearance", "Preserves jawbone"],
     process: ["Consultation", "Implant placement", "Healing", "Crown fitting"],
+    image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe"
   },
   {
     title: "Dental Caries Management & Fillings", category: "dental", icon: "◎", displayOrder: 4,
     description: "Effective treatment for cavities using modern filling materials.",
     benefits: ["Stops decay", "Restores tooth structure", "Pain relief"],
     process: ["Decay removal", "Cavity preparation", "Filling placement"],
+    image: "https://images.unsplash.com/photo-1593054944876-0044038a8e10"
   },
   {
     title: "Invisalign & Aligners", category: "dental", icon: "◎", displayOrder: 5,
     description: "Discreet orthodontic solutions for a straighter smile without braces.",
     benefits: ["Nearly invisible", "Removable", "Comfortable"],
     process: ["Digital scan", "3D planning", "Custom aligner wear"],
+    image: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787"
   },
   {
     title: "Crowns & Veneers", category: "dental", icon: "❋", displayOrder: 6,
     description: "Restore and enhance your teeth with custom-crafted crowns and veneers.",
     benefits: ["Natural look", "Strength", "Stain resistance"],
     process: ["Tooth prep", "Impression", "Fitting"],
+    image: "https://images.unsplash.com/photo-1571772996211-2f02c9727629"
   },
   {
     title: "Complete Dentures", category: "dental", icon: "⊕", displayOrder: 7,
     description: "High-quality dentures for full mouth restoration and function.",
     benefits: ["Restores chewing", "Natural look", "Comfortable fit"],
     process: ["Impressions", "Trial fit", "Final delivery"],
+    image: "https://images.unsplash.com/photo-1543167107-16040854d550"
   },
   {
     title: "Full Mouth Rehabilitation", category: "dental", icon: "◈", displayOrder: 8,
     description: "Comprehensive reconstruction of all teeth for health and aesthetics.",
     benefits: ["Total restoration", "Improved bite", "Aesthetic overhaul"],
     process: ["Deep analysis", "Phased treatment", "Final restoration"],
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
   },
   {
     title: "Mouth Guards & Oral Appliances", category: "dental", icon: "◇", displayOrder: 9,
     description: "Custom appliances for sports protection and teeth grinding.",
     benefits: ["Injury prevention", "Protects enamel", "Better sleep"],
     process: ["Impression", "Custom fabrication", "Fitting"],
+    image: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289"
   },
   {
     title: "Pediatric Dentistry", category: "dental", icon: "✦", displayOrder: 10,
     description: "Specialized dental care for children in a friendly environment.",
     benefits: ["Child-friendly", "Preventive focus", "Early habit correction"],
     process: ["Gentle check-up", "Preventive care", "Parent education"],
+    image: "https://images.unsplash.com/photo-1460676746856-e65c00e05015"
   },
   {
     title: "Head and Neck Trauma, Cysts & Tumors", category: "dental", icon: "⊕", displayOrder: 11,
     description: "Expert surgical management of complex head and neck conditions.",
     benefits: ["Expert care", "Advanced techniques", "Compassionate approach"],
     process: ["Diagnosis", "Surgical planning", "Operation", "Recovery"],
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118"
   },
   {
     title: "Facial Aesthetics", category: "aesthetic", icon: "✧", displayOrder: 12,
     description: "Enhance your natural beauty with our aesthetic facial treatments.",
     benefits: ["Youthful look", "Balanced features", "Non-surgical options"],
     process: ["Consultation", "Treatment mapping", "Procedure"],
+    image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
   },
   {
     title: "Hair Transplant & Other Services", category: "aesthetic", icon: "✺", displayOrder: 13,
     description: "Advanced hair restoration and various aesthetic enhancements.",
     benefits: ["Natural hair growth", "Self-confidence", "Expert execution"],
     process: ["Consultation", "Procedure", "Aftercare"],
+    image: "https://images.unsplash.com/photo-1585759827591-75931d40d282"
   },
 ];
 
@@ -153,13 +166,11 @@ const seed = async () => {
   console.log(`✅  ${testimonials.length} testimonials seeded.`);
 
   // Seed clinics
-  const clinicsToInsert = clinicsData.map(c => ({...c, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
-  const clinics = await Clinic.insertMany(clinicsToInsert);
+  const clinics = await Clinic.insertMany(clinicsData);
   console.log(`✅  ${clinics.length} clinics seeded.`);
 
   // Seed services
-  const servicesToInsert = servicesData.map(s => ({...s, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
-  const services = await Service.insertMany(servicesToInsert);
+  const services = await Service.insertMany(servicesData);
   console.log(`✅  ${services.length} services seeded.`);
 
   // Map clinic names to IDs for doctor assignment
@@ -175,6 +186,7 @@ const seed = async () => {
       qualifications: "MDS (Prosthodontics)",
       bio: "Dr. Harshita specializes in dental implants and cosmetic dentistry, bringing smiles back to life.",
       state: "Telangana",
+      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2",
       clinics: [clinicMap["H&H Kondapur"], clinicMap["H&H Manikonda"], clinicMap["H&H Tirupati"]],
     },
     {
@@ -184,12 +196,12 @@ const seed = async () => {
       qualifications: "MDS (Oral & Maxillofacial Surgery)",
       bio: "Dr. Harshith is an expert in complex oral surgeries and facial aesthetics.",
       state: "Andhra Pradesh",
+      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d",
       clinics: [clinicMap["H&H Vijayawada"], clinicMap["H&H Guntur"], clinicMap["H&H Kondapur"]],
     },
   ];
 
-  const doctorsToInsert = doctorsData.map(d => ({...d, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"}));
-  const doctors = await Doctor.insertMany(doctorsToInsert);
+  const doctors = await Doctor.insertMany(doctorsData);
   console.log(`✅  ${doctors.length} doctors seeded.`);
 
   // Seed admin user
