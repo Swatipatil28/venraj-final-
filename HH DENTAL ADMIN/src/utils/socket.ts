@@ -1,7 +1,14 @@
 import { io, Socket } from "socket.io-client";
 
 // In production, this should come from an environment variable
-const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// Try VITE_API_URL, then VITE_API_BASE_URL (minus /api), 
+// then a production fallback, finally localhost if in dev
+const SOCKET_URL = VITE_API_URL || 
+                   (VITE_API_BASE_URL ? VITE_API_BASE_URL.replace(/\/api$/, "") : null) || 
+                   (import.meta.env.PROD ? "https://venraj-final.onrender.com" : "http://localhost:5001");
 
 class SocketService {
   private static instance: SocketService;

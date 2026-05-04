@@ -174,6 +174,7 @@ const seed = async () => {
       experience: "10+ Years",
       qualifications: "MDS (Prosthodontics)",
       bio: "Dr. Harshita specializes in dental implants and cosmetic dentistry, bringing smiles back to life.",
+      state: "Telangana",
       clinics: [clinicMap["H&H Kondapur"], clinicMap["H&H Manikonda"], clinicMap["H&H Tirupati"]],
     },
     {
@@ -182,6 +183,7 @@ const seed = async () => {
       experience: "8+ Years",
       qualifications: "MDS (Oral & Maxillofacial Surgery)",
       bio: "Dr. Harshith is an expert in complex oral surgeries and facial aesthetics.",
+      state: "Andhra Pradesh",
       clinics: [clinicMap["H&H Vijayawada"], clinicMap["H&H Guntur"], clinicMap["H&H Kondapur"]],
     },
   ];

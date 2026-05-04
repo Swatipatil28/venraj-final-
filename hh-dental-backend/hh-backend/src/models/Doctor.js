@@ -16,6 +16,10 @@ const doctorSchema = new mongoose.Schema(
       },
     },
 
+    experience: {
+      type: String,
+      required: [true, "Experience is required"],
+    },
     qualifications: {
       type: String,
       required: [true, "Qualifications are required"],
@@ -29,6 +33,12 @@ const doctorSchema = new mongoose.Schema(
       enum: ["Telangana", "Andhra Pradesh"],
       required: [true, "State is required"],
     },
+    clinics: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Clinic",
+      },
+    ],
 
     isActive: {
       type: Boolean,
