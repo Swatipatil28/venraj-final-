@@ -13,10 +13,7 @@ import {
   Edit2, 
   Trash2, 
   Award,
-  Check,
-  Upload,
-  ImageIcon,
-  Loader2
+  Check
 } from 'lucide-react';
 import { DoctorService, ClinicService, UploadService } from '../services/adminService';
 import { DoctorDTO, ClinicDTO, Specialization } from '../types';
@@ -25,6 +22,7 @@ import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/F
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useSearchStore } from '../store/useSearchStore';
 import { useToast } from '../components/Toast';
+import { socket } from '../utils/socket';
 
 const SPECIALIZATIONS: Specialization[] = [
   'Prosthodontist',
@@ -47,39 +45,32 @@ export default function DoctorsPage() {
   const [loading, setLoading] = useState(true);
   const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
   const [filterSpec, setFilterSpec] = useState<Specialization | 'All'>('All');
+  const [filterState, setFilterState] = useState<'All' | 'Telangana' | 'Andhra Pradesh'>('All');
   
   // CRUD State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<DoctorDTO | null>(null);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
-      const imageUrl = await UploadService.uploadImage(file);
-      setFormData(prev => ({ ...prev, image: imageUrl }));
-      showToast('Profile image updated');
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Upload failed', 'error');
-    } finally {
-      setUploading(false);
-    }
-  };
   const [formData, setFormData] = useState<Partial<DoctorDTO>>({
     name: '',
     specialization: [],
-    experience: 0,
     qualifications: '',
-    assignedClinicIds: [],
     bio: '',
-    image: '',
+    state: 'Telangana',
   });
 
   useEffect(() => {
     fetchData();
+
+    // Socket.io for real-time updates
+    socket.on('doctorUpdated', (data: DoctorDTO[]) => {
+      setDoctors(data);
+    });
+
+    return () => {
+      socket.off('doctorUpdated');
+    };
   }, []);
 
   const fetchData = async () => {
@@ -102,7 +93,6 @@ export default function DoctorsPage() {
   const handleOpenModal = (doc?: DoctorDTO) => {
     if (doc) {
       setSelectedDoc(doc);
-      // Ensure specialization is always an array when opening modal
       setFormData({
         ...doc,
         specialization: Array.isArray(doc.specialization)
@@ -110,17 +100,16 @@ export default function DoctorsPage() {
           : doc.specialization
             ? [doc.specialization as unknown as string]
             : [],
+        state: doc.state || 'Telangana',
       });
     } else {
       setSelectedDoc(null);
       setFormData({
         name: '',
         specialization: [],
-        experience: 0,
         qualifications: '',
-        assignedClinicIds: [],
         bio: '',
-        image: '',
+        state: 'Telangana',
       });
     }
     setIsModalOpen(true);
@@ -137,7 +126,7 @@ export default function DoctorsPage() {
         showToast('Specialist registered successfully');
       }
       setIsModalOpen(false);
-      void fetchData();
+      // No manual fetchData needed here as socket will broadcast the change
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Action failed', 'error');
     }
@@ -148,7 +137,7 @@ export default function DoctorsPage() {
       try {
         await DoctorService.delete(id);
         showToast('Specialist removed from network');
-        void fetchData();
+        // No manual fetchData needed here
       } catch (error) {
         showToast(error instanceof Error ? error.message : 'Delete failed', 'error');
       }
@@ -162,7 +151,8 @@ export default function DoctorsPage() {
       doc.qualifications.toLowerCase().includes(query);
     const specs = Array.isArray(doc.specialization) ? doc.specialization : [doc.specialization as unknown as string];
     const matchesSpec = filterSpec === 'All' || specs.includes(filterSpec);
-    return matchesSearch && matchesSpec;
+    const matchesState = filterState === 'All' || doc.state === filterState;
+    return matchesSearch && matchesSpec && matchesState;
   });
 
   return (
@@ -177,15 +167,15 @@ export default function DoctorsPage() {
         </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="btn-accent flex items-center gap-2"
+          className="btn-accent flex items-center gap-2 px-6 py-3"
         >
           <Plus size={18} /> {t('registerDoctor')}
         </button>
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="relative group md:col-span-2">
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="relative group flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors" size={18} />
           <input 
             type="text" 
@@ -195,16 +185,30 @@ export default function DoctorsPage() {
             className="w-full bg-sidebar-bg border border-border-subtle rounded-xl py-4 pl-12 pr-4 text-text-primary text-sm outline-none focus:border-accent transition-all"
           />
         </div>
-        <div className="relative">
-          <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
-          <select 
-            value={filterSpec}
-            onChange={(e) => setFilterSpec(e.target.value as any)}
-            className="w-full bg-sidebar-bg border border-border-subtle rounded-xl py-4 pl-12 pr-4 text-text-primary text-sm outline-none appearance-none cursor-pointer focus:border-accent"
-          >
-            <option value="All">All Specializations</option>
-            {SPECIALIZATIONS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative min-w-[200px]">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+            <select 
+              value={filterSpec}
+              onChange={(e) => setFilterSpec(e.target.value as any)}
+              className="w-full bg-sidebar-bg border border-border-subtle rounded-xl py-4 pl-12 pr-4 text-text-primary text-sm outline-none appearance-none cursor-pointer focus:border-accent"
+            >
+              <option value="All">All Specializations</option>
+              {SPECIALIZATIONS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div className="relative min-w-[200px]">
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+            <select 
+              value={filterState}
+              onChange={(e) => setFilterState(e.target.value as any)}
+              className="w-full bg-sidebar-bg border border-border-subtle rounded-xl py-4 pl-12 pr-4 text-text-primary text-sm outline-none appearance-none cursor-pointer focus:border-accent"
+            >
+              <option value="All">All Branches</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -240,18 +244,18 @@ export default function DoctorsPage() {
                 {/* Profile Section */}
                 <div className="p-8 pb-4">
                   <div className="flex items-start gap-6">
-
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors truncate">{doc.name}</h3>
-                      <p className="text-accent text-[10px] uppercase tracking-widest font-bold mt-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors truncate">{doc.name}</h3>
+                        <span className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-[8px] text-accent uppercase font-bold tracking-tighter">
+                          {doc.state}
+                        </span>
+                      </div>
+                      <p className="text-accent text-[10px] uppercase tracking-widest font-bold">
                         {Array.isArray(doc.specialization) ? doc.specialization.join(', ') : doc.specialization}
                       </p>
                       <div className="flex flex-col gap-1 mt-2">
                         <span className="text-text-muted text-[10px] font-medium truncate uppercase tracking-tighter">{doc.qualifications}</span>
-                        <div className="flex items-center gap-2 text-text-muted text-xs">
-                          <Award size={14} className="text-accent" />
-                          <span>{doc.experience} {t('experienceYears')}</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -259,21 +263,6 @@ export default function DoctorsPage() {
 
                 <div className="px-8 py-2 overflow-hidden">
                   <p className="text-text-secondary text-sm leading-relaxed line-clamp-3 italic">"{doc.bio}"</p>
-                </div>
-
-                <div className="mt-auto p-8 pt-4 border-t border-border-subtle bg-text-primary/[0.01]">
-                  <div className="flex flex-wrap gap-2">
-                    {doc.assignedClinicIds.map(cid => {
-                      const clinic = clinics.find(c => c._id === cid);
-                      if (!clinic) return null;
-                      return (
-                        <span key={cid} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-text-primary/5 border border-border-subtle text-[10px] text-text-secondary uppercase tracking-widest font-medium group-hover:border-accent/40 transition-all">
-                          <MapPin size={10} className="text-accent" />
-                          {clinic.name}
-                        </span>
-                      );
-                    })}
-                  </div>
                 </div>
               </motion.div>
             ))}
@@ -289,6 +278,16 @@ export default function DoctorsPage() {
       >
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FloatingSelect 
+              label="Branch (State)" 
+              required
+              value={formData.state || 'Telangana'}
+              onChange={(e) => setFormData({...formData, state: e.target.value as any})}
+              options={[
+                { label: 'Telangana', value: 'Telangana' },
+                { label: 'Andhra Pradesh', value: 'Andhra Pradesh' }
+              ]}
+            />
             <FloatingInput 
               label={t('doctorName')} 
               required
@@ -326,131 +325,14 @@ export default function DoctorsPage() {
                   );
                 })}
               </div>
-              {/* Comma-separated fallback input */}
-              <p className="text-[10px] text-text-muted mt-1 ml-2">
-                Or type comma-separated:&nbsp;
-                <input
-                  type="text"
-                  placeholder="e.g. Orthodontist, Surgeon"
-                  className="bg-transparent border-b border-border-subtle text-text-secondary text-[10px] outline-none w-48 px-1"
-                  value={Array.isArray(formData.specialization) ? formData.specialization.join(', ') : ''}
-                  onChange={(e) => {
-                    const arr = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
-                    setFormData({ ...formData, specialization: arr });
-                  }}
-                />
-              </p>
             </div>
-            <FloatingInput 
-              label={t('experienceYearsLabel')} 
-              type="number"
-              required
-              value={formData.experience || 0}
-              onChange={(e) => setFormData({...formData, experience: parseInt(e.target.value)})}
-            />
+
             <FloatingInput 
               label={t('qualifications')} 
               required
               value={formData.qualifications || ''}
               onChange={(e) => setFormData({...formData, qualifications: e.target.value})}
             />
-          </div>
-
-          {/* ── Image Upload ── */}
-          <div className="space-y-4">
-            <label className="text-[10px] text-text-muted uppercase tracking-widest font-bold ml-2">Professional Visualization</label>
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1 space-y-4">
-                <FloatingInput
-                  label="Profile Image URL"
-                  value={formData.image || ''}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                />
-                <div className="relative group">
-                  <input
-                    type="file"
-                    id="doctor-image-upload"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={uploading}
-                  />
-                  <label
-                    htmlFor="doctor-image-upload"
-                    className={`
-                      flex items-center justify-center gap-3 px-6 py-4 rounded-2xl border-2 border-dashed border-border-subtle 
-                      bg-text-primary/[0.02] text-text-muted hover:text-accent hover:border-accent/40 cursor-pointer transition-all
-                      ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                  >
-                    {uploading ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        <span>Uploading from Device...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload size={18} />
-                        <span>Upload from Local Device</span>
-                      </>
-                    )}
-                  </label>
-                </div>
-              </div>
-              
-              <div className="w-full md:w-32 h-32 rounded-2xl border border-border-subtle overflow-hidden bg-text-primary/[0.02] flex items-center justify-center relative group">
-                {formData.image ? (
-                  <>
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/400x300?text=Invalid+Image";
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-bg-main/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <ImageIcon size={24} className="text-accent" />
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-text-muted">
-                    <ImageIcon size={32} strokeWidth={1.5} />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">No Photo</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="space-y-3">
-            <label className="text-[10px] text-text-muted uppercase tracking-widest font-bold ml-2">{t('assignedToClinics')}</label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {clinics.map(clinic => (
-                <button
-                  key={clinic._id}
-                  type="button"
-                  onClick={() => {
-                    const ids = formData.assignedClinicIds || [];
-                    const newIds = ids.includes(clinic._id) 
-                      ? ids.filter(id => id !== clinic._id)
-                      : [...ids, clinic._id];
-                    setFormData({...formData, assignedClinicIds: newIds});
-                  }}
-                  className={`
-                    px-4 py-3 rounded-xl border text-left transition-all flex items-center justify-between
-                    ${formData.assignedClinicIds?.includes(clinic._id) 
-                      ? 'bg-accent/10 border-accent text-accent shadow-[0_0_15px_rgba(212,175,55,0.1)]' 
-                      : 'bg-text-primary/5 border-border-subtle text-text-muted hover:border-accent/40'}
-                  `}
-                >
-                  <span className="text-xs font-bold truncate">{clinic.name}</span>
-                  {formData.assignedClinicIds?.includes(clinic._id) && <Check size={14} />}
-                </button>
-              ))}
-            </div>
           </div>
 
           <FloatingTextArea 

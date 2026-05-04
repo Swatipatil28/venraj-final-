@@ -1,6 +1,8 @@
 import { getClinics } from "../services/api.service";
+import socket from "../utils/socket";
 import { useApiResource } from "../hooks/useApiResource";
 import { useLanguage } from "../context/LanguageContext";
+import { useEffect } from "react";
 import PageHero from "../components/PageHero";
 import SectionIntro from "../components/SectionIntro";
 import LocationCard from "../components/LocationCard";
@@ -8,7 +10,17 @@ import { CardSkeleton } from "../components/LoadingSkeleton";
 
 export default function LocationsPage() {
   const { t } = useLanguage();
-  const { data, loading } = useApiResource(getClinics, [], []);
+  const { data, loading, setData } = useApiResource(getClinics, [], []);
+
+  useEffect(() => {
+    socket.on("locationUpdated", (updatedData) => {
+      setData(updatedData);
+    });
+
+    return () => {
+      socket.off("locationUpdated");
+    };
+  }, [setData]);
 
   const regions = [
     { key: "Telangana", title: t("locations.telangana") },
@@ -30,15 +42,15 @@ export default function LocationsPage() {
           {loading ? <CardSkeleton count={4} /> : null}
           {!loading
             ? regions.map((region) => {
-                const clinics = data.filter((clinic) => clinic.region === region.key || clinic.state === region.key);
+                const clinics = data.filter((clinic) => clinic.state === region.key);
                 if (!clinics.length) return null;
 
                 return (
                   <div key={region.key}>
                     <SectionIntro eyebrow={region.title} title={`${region.title} clinics`} />
                     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                      {clinics.map((clinic) => (
-                        <LocationCard key={clinic.id} clinic={clinic} />
+                      {clinics.map((clinic, idx) => (
+                        <LocationCard key={clinic._id || clinic.id || idx} clinic={clinic} />
                       ))}
                     </div>
                   </div>

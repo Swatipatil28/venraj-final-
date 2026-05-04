@@ -15,10 +15,7 @@ const doctorSchema = new mongoose.Schema(
         message: "At least one specialization is required",
       },
     },
-    experience: {
-      type: String,
-      required: [true, "Experience is required"],
-    },
+
     qualifications: {
       type: String,
       required: [true, "Qualifications are required"],
@@ -27,16 +24,12 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    image: {
+    state: {
       type: String,
-      default: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
+      enum: ["Telangana", "Andhra Pradesh"],
+      required: [true, "State is required"],
     },
-    clinics: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Clinic",
-      },
-    ],
+
     isActive: {
       type: Boolean,
       default: true,

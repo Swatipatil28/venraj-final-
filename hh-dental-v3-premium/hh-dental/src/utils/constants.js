@@ -4,9 +4,9 @@ export const BRAND_SHORT = "H&H";
 export const BRAND_TAGLINE = "Your Smile, Our Passion";
 
 // Contact
-export const CONTACT_PHONE = "+91 97033 34624";
+export const CONTACT_PHONE = "+91 90300 58351";
 export const CONTACT_EMAIL = "info@hhdental.in";
-export const CONTACT_WHATSAPP = "919703334624";
+export const CONTACT_WHATSAPP = "919030058351";
 
 // Social
 export const SOCIAL_LINKS = {

@@ -1,15 +1,22 @@
 const Clinic = require("../models/Clinic");
 const { sendSuccess, sendError } = require("../utils/response");
+const { emitEvent } = require("../utils/socket");
+
+// Helper to broadcast full clinics list
+const broadcastClinics = async () => {
+  const clinics = await Clinic.find({ isActive: true }).sort({ state: 1, name: 1 });
+  emitEvent("locationUpdated", clinics);
+};
 
 // GET /api/clinics
 const getClinics = async (req, res, next) => {
   try {
-    const { state, city } = req.query;
+    const { name, state } = req.query;
     const filter = { isActive: true };
-    if (state) filter.state = new RegExp(state, "i");
-    if (city) filter.city = new RegExp(city, "i");
+    if (name) filter.name = new RegExp(name, "i");
+    if (state) filter.state = state;
 
-    const clinics = await Clinic.find(filter).sort({ state: 1, city: 1 });
+    const clinics = await Clinic.find(filter).sort({ state: 1, name: 1 });
     return sendSuccess(res, clinics, "Clinics retrieved");
   } catch (err) {
     next(err);
@@ -31,9 +38,8 @@ const getClinicById = async (req, res, next) => {
 const createClinic = async (req, res, next) => {
   try {
     const payload = { ...req.body };
-    const image = req.body.image || req.body.imageUrl;
-    if (image) payload.image = image;
     const clinic = await Clinic.create(payload);
+    await broadcastClinics();
     return sendSuccess(res, clinic, "Clinic created successfully", 201);
   } catch (err) {
     next(err);
@@ -44,19 +50,13 @@ const createClinic = async (req, res, next) => {
 const updateClinic = async (req, res, next) => {
   try {
     const payload = { ...req.body };
-    const image = req.body.image || req.body.imageUrl;
-    if (image) {
-      payload.image = image;
-    } else {
-      delete payload.image;
-      delete payload.imageUrl;
-    }
     const clinic = await Clinic.findByIdAndUpdate(
       req.params.id,
       payload,
       { new: true, runValidators: true }
     );
     if (!clinic) return sendError(res, "Clinic not found", 404);
+    await broadcastClinics();
     return sendSuccess(res, clinic, "Clinic updated successfully");
   } catch (err) {
     next(err);
@@ -72,6 +72,7 @@ const deleteClinic = async (req, res, next) => {
       { new: true }
     );
     if (!clinic) return sendError(res, "Clinic not found", 404);
+    await broadcastClinics();
     return sendSuccess(res, null, "Clinic deactivated successfully");
   } catch (err) {
     next(err);

@@ -42,5 +42,5 @@ export function useApiResource(fetcher, fallbackData = [], deps = []) {
 
   const reload = () => load(false);
 
-  return { data, loading, error, reload };
+  return { data, loading, error, reload, setData };
 }

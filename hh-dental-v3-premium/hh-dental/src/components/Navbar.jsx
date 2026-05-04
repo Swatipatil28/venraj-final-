@@ -55,58 +55,71 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
-      <div
-        className={`container-shell transition-all duration-300 ${scrolled ? "glass-panel rounded-[28px] py-3" : "py-2"
-          }`}
-      >
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+      scrolled || open ? "bg-white shadow-lg py-3" : "py-4 md:py-6"
+    }`}>
+      <div className="container-shell">
         <div className="flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3">
+          <Link to="/" className="flex items-center gap-3 sm:gap-4 group" onClick={() => setOpen(false)}>
             <div
-              className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full"
+              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 shadow-sm"
               style={{
-                background: "rgba(46, 134, 171, 0.1)",
-                border: "1px solid rgba(46, 134, 171, 0.2)",
+                background: "white",
+                border: `2px solid var(--primary)`,
               }}
             >
-              <span className="font-['Cinzel'] text-[10px] sm:text-sm text-gradient">H&H</span>
+              <span className="font-['Cinzel'] font-bold text-xs sm:text-base text-[var(--primary)]">H&H</span>
             </div>
             <div>
-              <p className="font-['Cinzel'] text-xs sm:text-sm tracking-[0.18em] text-[var(--text)]">H&H Dental</p>
-              <p className="hidden sm:block text-[10px] text-[var(--muted)]">Excellence in every smile</p>
+              <p className="font-['Cinzel'] font-black text-sm sm:text-xl tracking-[0.1em] text-[var(--text)] leading-none">H&H DENTAL</p>
+              <p className="text-[8px] sm:text-[10px] uppercase tracking-widest text-[var(--primary)] font-bold mt-1">Excellence in every smile</p>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="hidden items-center gap-10 lg:flex">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `text-sm transition ${isActive ? "text-[var(--primary)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`
+                  `relative py-2 text-base font-semibold transition-all duration-300 ${
+                    isActive 
+                      ? "text-[var(--primary)]" 
+                      : "text-[var(--muted)] hover:text-[var(--primary)]"
+                  }`
                 }
               >
-                {item.label}
+                {({ isActive }) => (
+                  <>
+                    {item.label}
+                    {isActive && (
+                      <motion.span 
+                        layoutId="nav-underline"
+                        className="absolute bottom-0 left-0 h-0.5 w-full bg-[var(--primary)] rounded-full"
+                      />
+                    )}
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
             <LanguageToggle />
-            <Link to="/book-appointment" className="cta-primary hidden md:inline-flex">
+            <Link to="/book-appointment" className="cta-primary hidden md:inline-flex shadow-primary-sm hover:shadow-primary-md">
               {t("nav.book")}
             </Link>
             <button
               type="button"
               onClick={() => setOpen((prev) => !prev)}
-              className="glass-panel inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full lg:hidden"
+              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full lg:hidden border border-[var(--line)] bg-slate-50 transition-colors hover:bg-slate-100"
               aria-label="Toggle navigation"
             >
-              <span className="space-y-1 sm:space-y-1.5">
-                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
-                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
-                <span className="block h-0.5 w-4 sm:w-5 rounded-full bg-[var(--text)]" />
-              </span>
+              <div className="relative h-5 w-5">
+                <span className={`absolute left-0 top-1/2 block h-0.5 w-5 -translate-y-1/2 rounded-full bg-[var(--text)] transition-transform duration-300 ${open ? "rotate-45" : "-translate-y-[6px]"}`} />
+                <span className={`absolute left-0 top-1/2 block h-0.5 w-5 -translate-y-1/2 rounded-full bg-[var(--text)] transition-opacity duration-300 ${open ? "opacity-0" : "opacity-100"}`} />
+                <span className={`absolute left-0 top-1/2 block h-0.5 w-5 -translate-y-1/2 rounded-full bg-[var(--text)] transition-transform duration-300 ${open ? "-rotate-45" : "translate-y-[6px]"}`} />
+              </div>
             </button>
           </div>
         </div>
@@ -115,25 +128,54 @@ export default function Navbar() {
           {open && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: "100vh" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden lg:hidden"
+              className="fixed inset-0 top-[72px] z-40 bg-white lg:hidden overflow-y-auto"
             >
-              <div className="mt-4 space-y-2 border-t border-[var(--line)] pt-4 pb-2">
-                {navItems.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setOpen(false)}
-                    className="block rounded-xl px-4 py-3 text-sm font-medium text-[var(--muted)] transition hover:bg-[rgba(46,134,171,0.05)] hover:text-[var(--text)]"
+              <div className="container-shell py-12 flex flex-col items-center gap-10">
+                <div className="flex flex-col items-center gap-6 w-full">
+                  {navItems.map((item, idx) => (
+                    <motion.div
+                      key={item.to}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="w-full text-center"
+                    >
+                      <NavLink
+                        to={item.to}
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) => 
+                          `text-3xl font-bold tracking-tight transition-colors ${
+                            isActive ? "text-[var(--primary)]" : "text-slate-400 hover:text-[var(--text)]"
+                          }`
+                        }
+                      >
+                        {item.label}
+                      </NavLink>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="w-full pt-10 border-t border-slate-100"
+                >
+                  <Link 
+                    to="/book-appointment" 
+                    onClick={() => setOpen(false)} 
+                    className="cta-primary flex w-full py-5 text-xl"
                   >
-                    {item.label}
-                  </NavLink>
-                ))}
-                <div className="pt-2">
-                  <Link to="/book-appointment" onClick={() => setOpen(false)} className="cta-primary flex w-full justify-center">
                     {t("nav.book")}
                   </Link>
+                </motion.div>
+
+                <div className="flex items-center gap-8 text-slate-400 mt-auto pb-20">
+                   <p className="text-xs font-bold uppercase tracking-widest">{t("nav.locations")}</p>
+                   <div className="h-1 w-1 rounded-full bg-slate-300" />
+                   <p className="text-xs font-bold uppercase tracking-widest">{t("nav.doctors")}</p>
                 </div>
               </div>
             </motion.div>

@@ -4,6 +4,18 @@ const { sendSuccess, sendError, sendPaginated } = require("../utils/response");
 const { sendAppointmentConfirmation, sendStatusUpdateEmail } = require("../services/email.service");
 const { generateWhatsAppLink, generatePatientWhatsAppLink } = require("../utils/whatsapp");
 const { PAGINATION, APPOINTMENT_STATUS } = require("../config/constants");
+const { emitEvent } = require("../utils/socket");
+
+// Helper to broadcast recent appointments
+const broadcastAppointments = async () => {
+  const appointments = await Appointment.find({})
+    .populate("clinicId", "name city")
+    .populate("doctorId", "name specialization")
+    .populate("serviceId", "title category")
+    .sort({ createdAt: -1 })
+    .limit(100); // Limit to 100 recent ones for performance
+  emitEvent("appointmentUpdated", appointments);
+};
 
 // ─────────────────────────────────────────────────────────
 // PUBLIC
@@ -58,6 +70,9 @@ const createAppointment = async (req, res, next) => {
     sendAppointmentConfirmation(appointment, clinic).catch((err) =>
       console.warn("Email send failed:", err.message)
     );
+
+    await broadcastAppointments();
+    emitEvent("newAppointment", appointment);
 
     return sendSuccess(
       res,
@@ -236,6 +251,8 @@ const updateAppointment = async (req, res, next) => {
       );
     }
 
+    await broadcastAppointments();
+
     return sendSuccess(res, appointment, "Appointment updated successfully");
   } catch (err) {
     next(err);
@@ -264,6 +281,8 @@ const confirmAppointment = async (req, res, next) => {
       console.warn("Confirmation email failed:", err.message)
     );
 
+    await broadcastAppointments();
+
     return sendSuccess(res, appointment, "Appointment confirmed successfully");
   } catch (err) {
     next(err);
@@ -275,6 +294,7 @@ const deleteAppointment = async (req, res, next) => {
   try {
     const appointment = await Appointment.findByIdAndDelete(req.params.id);
     if (!appointment) return sendError(res, "Appointment not found", 404);
+    await broadcastAppointments();
     return sendSuccess(res, null, "Appointment deleted successfully");
   } catch (err) {
     next(err);

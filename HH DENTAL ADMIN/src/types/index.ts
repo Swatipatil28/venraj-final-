@@ -53,6 +53,7 @@ export interface DoctorDTO {
   qualifications: string;
   assignedClinicIds: string[];
   bio: string;
+  state?: 'Telangana' | 'Andhra Pradesh';
 }
 
 export type ServiceCategory = 'Dental' | 'Aesthetic';

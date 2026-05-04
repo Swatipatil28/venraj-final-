@@ -7,52 +7,52 @@ export default function HeroSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden bg-[#0F172A]">
+    <section className="relative overflow-hidden bg-[#0F172A] min-h-[60vh] sm:min-h-[80vh] lg:min-h-[90vh] flex items-center">
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: "linear-gradient(to right, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.4))",
+            background: "linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.4))",
           }}
         />
         <img
           src="https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1600&q=80"
-          alt=""
-          className="h-[85vh] min-h-[600px] w-full object-cover"
+          alt="Premium Dental Clinic"
+          className="h-full w-full object-cover scale-105 animate-slow-zoom"
         />
       </div>
 
-      <div className="container-shell relative z-20 flex min-h-[85vh] items-center px-6 py-[60px] sm:px-10 sm:py-[80px]">
+      <div className="container-shell relative z-20 px-6 py-12 sm:px-10 sm:py-20 lg:py-32">
         <motion.div
-          initial={{ opacity: 0, y: 34 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-2xl text-center md:text-left"
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="max-w-3xl text-center md:text-left"
         >
-          <p className="eyebrow mb-6 inline-block rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-[#CBD5F5] backdrop-blur-md sm:text-sm">
+          <p className="eyebrow mb-8 inline-block rounded-full bg-[var(--primary)]/20 border border-[var(--primary)]/30 px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white backdrop-blur-md sm:text-sm">
             {t("home.heroEyebrow")}
           </p>
-          <h1 className="mb-6 text-3xl font-bold leading-[1.2] text-white sm:text-4xl md:text-5xl lg:text-6xl">
+          <h1 className="mb-8 text-4xl font-black leading-[1.1] text-white sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
             {t("home.heroTitle")}
           </h1>
-          <p className="mb-10 mx-auto md:mx-0 max-w-xl text-base text-[#CBD5F5] sm:text-lg">
+          <p className="mb-12 mx-auto md:mx-0 max-w-xl text-lg text-[#CBD5F5] sm:text-xl font-medium leading-relaxed">
             {t("home.heroBody")}
           </p>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center md:justify-start">
-            <Link to="/book-appointment" className="cta-primary w-full sm:w-auto">
+          <div className="flex flex-col gap-5 sm:flex-row sm:justify-center md:justify-start">
+            <Link to="/book-appointment" className="cta-primary px-10 py-5 text-lg shadow-primary-md hover:shadow-primary-lg transform hover:-translate-y-1">
               {t("common.bookNow")}
             </Link>
-            <Link to="/services" className="rounded-lg border-2 border-white/20 bg-white/5 px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-white/10 hover:border-white/30 backdrop-blur-sm w-full sm:w-auto text-center">
+            <Link to="/services" className="rounded-xl border-2 border-white/30 bg-white/5 px-10 py-5 text-lg font-bold text-white transition-all hover:bg-white/10 hover:border-white/50 backdrop-blur-md w-full sm:w-auto text-center">
               {t("home.heroSecondary")}
             </Link>
           </div>
           
-          <div className="mt-12 sm:mt-16 grid grid-cols-2 sm:grid-cols-3 gap-6 border-t border-white/10 pt-8">
+          <div className="mt-20 sm:mt-24 grid grid-cols-2 sm:grid-cols-3 gap-8 border-t border-white/10 pt-10">
             {SITE_STATS.slice(0, 3).map((item, idx) => (
               <div key={item.label} className={idx === 2 ? "col-span-2 sm:col-span-1" : ""}>
-                <p className="text-2xl sm:text-3xl font-bold text-[#2E86AB]">{item.value}</p>
-                <p className="mt-2 text-xs sm:text-sm text-[#CBD5F5]">{item.label}</p>
+                <p className="text-3xl sm:text-4xl font-black text-[var(--primary)]">{item.value}</p>
+                <p className="mt-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-[#94A3B8]">{item.label}</p>
               </div>
             ))}
           </div>

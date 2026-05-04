@@ -4,37 +4,17 @@ const clinicSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      trim: true,
-      default: "",
-    },
-    city: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    state: {
-      type: String,
-      required: [true, "Branch/State is required"],
-      trim: true,
-    },
-    area: {
-      type: String,
-      required: [true, "Area is required"],
+      required: [true, "Clinic Name is required"],
       trim: true,
     },
     phone: {
       type: String,
       required: [true, "Phone number is required"],
-      match: [/^\+?[\d\s\-()+]{8,20}$/, "Invalid phone number format"],
     },
-    email: {
+    state: {
       type: String,
-      lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "Invalid email address"],
-    },
-    image: {
-      type: String,
-      default: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
+      enum: ["Telangana", "Andhra Pradesh"],
+      required: [true, "State is required"],
     },
     isActive: {
       type: Boolean,
@@ -43,7 +23,5 @@ const clinicSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-clinicSchema.index({ city: 1, state: 1 });
 
 module.exports = mongoose.model("Clinic", clinicSchema);

@@ -2,7 +2,7 @@
  * Generate a pre-filled WhatsApp message link for an appointment.
  */
 const generateWhatsAppLink = (appointment, clinic) => {
-  const number = process.env.WHATSAPP_NUMBER || "919703334624";
+  const number = process.env.WHATSAPP_NUMBER || "919030058351";
 
   const date = appointment.preferredDate
     ? new Date(appointment.preferredDate).toLocaleDateString("en-IN", {

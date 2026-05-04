@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const app = require("./app");
 const connectDB = require("./config/db");
+const { initSocket } = require("./utils/socket");
 
 const PORT = Number(process.env.PORT || 5001);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -15,6 +16,9 @@ const startServer = async () => {
     console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(`Health: http://localhost:${PORT}/health`);
   });
+
+  // Initialize Socket.io
+  initSocket(server);
 
   server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {

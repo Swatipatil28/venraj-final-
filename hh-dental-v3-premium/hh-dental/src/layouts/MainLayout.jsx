@@ -17,7 +17,7 @@ export default function MainLayout() {
     <div className="page-shell">
       <Navbar />
       <OfflineBanner />
-      <main className="pt-24">
+      <main className="pt-20 md:pt-28">
         <Outlet />
       </main>
       <Footer />

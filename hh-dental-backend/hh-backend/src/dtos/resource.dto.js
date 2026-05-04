@@ -2,39 +2,28 @@ const { body } = require("express-validator");
 
 // ── Clinic ────────────────────────────────────────────────
 const clinicRules = [
-  body("state").trim().notEmpty().withMessage("Branch (State) is required"),
-  body("area").trim().notEmpty().withMessage("Area is required"),
+  body("name").trim().notEmpty().withMessage("Clinic name is required"),
   body("phone")
     .trim()
-    .notEmpty().withMessage("Phone is required")
-    .matches(/^\+?[\d\s\-()+]{8,20}$/).withMessage("Invalid phone number"),
-  body("email")
-    .optional()
-    .isEmail().withMessage("Invalid email address"),
-  body("image")
-    .optional()
+    .notEmpty().withMessage("Phone is required"),
+  body("state")
     .trim()
-    .custom((value) => !value || /^https?:\/\/.+/i.test(value))
-    .withMessage("Image must be a valid URL"),
+    .notEmpty().withMessage("State is required")
+    .isIn(["Telangana", "Andhra Pradesh"]).withMessage("Invalid state"),
 ];
 
 // ── Doctor ────────────────────────────────────────────────
 const doctorRules = [
   body("name").trim().notEmpty().withMessage("Doctor name is required"),
-  body("specialization").trim().notEmpty().withMessage("Specialization is required"),
-  body("experience").trim().notEmpty().withMessage("Experience is required"),
+  body("specialization")
+    .custom((val) => Array.isArray(val) && val.length > 0)
+    .withMessage("At least one specialization is required"),
   body("qualifications").trim().notEmpty().withMessage("Qualifications are required"),
   body("bio").optional().trim(),
-  body("image")
-    .optional()
+  body("state")
     .trim()
-    .custom((value) => !value || /^https?:\/\/.+/i.test(value))
-    .withMessage("Image must be a valid URL"),
-  body("clinics")
-    .optional()
-    .isArray().withMessage("Clinics must be an array")
-    .custom((val) => val.every((id) => /^[a-f\d]{24}$/i.test(id)))
-    .withMessage("Invalid clinic ID in array"),
+    .notEmpty().withMessage("State is required")
+    .isIn(["Telangana", "Andhra Pradesh"]).withMessage("Invalid state"),
 ];
 
 // ── Service ───────────────────────────────────────────────

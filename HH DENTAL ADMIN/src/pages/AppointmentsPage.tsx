@@ -22,6 +22,7 @@ import { useToast } from '../components/Toast';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useSearchStore } from '../store/useSearchStore';
 import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/FloatingInput';
+import { socket } from '../utils/socket';
 
 const statusStyles: Record<AppointmentStatus, string> = {
   pending: 'bg-amber-500/10 text-amber-500 border-amber-500/30',
@@ -116,13 +117,26 @@ export default function AppointmentsPage() {
     }
   };
 
-  // Poll every 12 seconds
+  // Real-time Socket.io integration
   useEffect(() => {
-    const interval = setInterval(() => {
-      void refreshAppointments();
-    }, 12000);
-    return () => clearInterval(interval);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    socket.on('appointmentUpdated', (data: AppointmentDTO[]) => {
+      setAppointments(data);
+      // Also update selected appointment if open
+      setSelectedAppointment((prev) => {
+        if (!prev) return null;
+        return data.find((a) => a._id === prev._id) ?? prev;
+      });
+    });
+
+    socket.on('newAppointment', (data: AppointmentDTO) => {
+      showToast(`New appointment from ${data.patientName}!`, 'info');
+    });
+
+    return () => {
+      socket.off('appointmentUpdated');
+      socket.off('newAppointment');
+    };
+  }, [showToast]);
 
 
   const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
@@ -224,49 +238,54 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-[1600px] mx-auto pb-20">
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <h2 className="text-4xl font-light tracking-tight text-text-primary">
-              {t('appointments').split(' ')[0]} <span className="text-accent italic">{t('appointments').split(' ')[1] || ''}</span>
-            </h2>
-            <span className="h-fit rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-blue-500">
-              {t('clinicOS')}
-            </span>
+    <div className="space-y-12 max-w-[1600px] mx-auto pb-20 px-4 sm:px-0">
+      {/* Page Header & Controls */}
+      <div className="flex flex-col gap-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border-subtle">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              <h2 className="text-4xl font-light tracking-tight text-text-primary">
+                {t('appointments').split(' ')[0]} <span className="text-accent italic">{t('appointments').split(' ')[1] || ''}</span>
+              </h2>
+              <span className="h-fit rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-blue-500">
+                {t('clinicOS')}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-text-secondary">Real-time patient flow management for H&H DENTAL.</p>
           </div>
-          <p className="mt-1 text-sm text-text-secondary">Real-time patient flow management for H&H DENTAL.</p>
+
+          <button onClick={() => setIsNewModalOpen(true)} className="btn-accent flex items-center justify-center gap-3 px-8 py-4 w-full md:w-auto shadow-primary-sm">
+            <Plus size={18} /> <span className="font-bold tracking-widest uppercase text-xs">{t('newAppointment')}</span>
+          </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <button onClick={() => setIsNewModalOpen(true)} className="btn-accent flex items-center gap-2">
-            <Plus size={16} /> {t('newAppointment')}
-          </button>
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full xl:w-auto">
+            <div className="relative flex-1 sm:w-80">
+              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder')}
+                className="w-full rounded-xl border border-border-subtle bg-sidebar-bg py-3.5 pl-12 pr-4 text-sm text-text-secondary shadow-lg transition-all focus:border-accent/50 focus:outline-none"
+                value={globalSearchQuery}
+                onChange={(event) => setGlobalSearchQuery(event.target.value)}
+              />
+            </div>
 
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
-            <input
-              type="text"
-              placeholder={t('searchPlaceholder')}
-              className="w-64 rounded-xl border border-border-subtle bg-sidebar-bg py-2.5 pl-12 pr-4 text-sm text-text-secondary shadow-xl transition-all focus:border-accent/50 focus:outline-none"
-              value={globalSearchQuery}
-              onChange={(event) => setGlobalSearchQuery(event.target.value)}
-            />
-          </div>
-
-          <div className="flex w-full overflow-x-auto rounded-xl border border-border-subtle bg-sidebar-bg p-1 shadow-xl sm:w-auto custom-scrollbar">
-            <div className="flex min-w-max">
-              {(['All', 'Today', 'Upcoming', 'Completed', 'Cancelled', 'Feedback'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-lg px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    activeTab === tab ? 'bg-accent text-bg-main shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 'text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
+            <div className="flex overflow-x-auto rounded-xl border border-border-subtle bg-sidebar-bg p-1.5 shadow-lg custom-scrollbar">
+              <div className="flex min-w-max gap-1">
+                {(['All', 'Today', 'Upcoming', 'Completed', 'Cancelled', 'Feedback'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`rounded-lg px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                      activeTab === tab ? 'bg-accent text-bg-main shadow-primary-sm' : 'text-text-secondary hover:text-text-primary hover:bg-text-primary/5'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

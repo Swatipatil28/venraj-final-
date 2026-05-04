@@ -24,6 +24,7 @@ import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/F
 import { useLanguageStore } from '../store/useLanguageStore';
 
 import { useToast } from '../components/Toast';
+import { socket } from '../utils/socket';
 
 export default function ClinicsPage() {
   const { t } = useLanguageStore();
@@ -36,16 +37,21 @@ export default function ClinicsPage() {
   const [selectedClinic, setSelectedClinic] = useState<ClinicDTO | null>(null);
   const [formData, setFormData] = useState<Partial<ClinicDTO>>({
     name: '',
-    city: '',
-    state: 'Telangana',
-    area: '',
     phone: '',
-    email: '',
-    image: ''
+    state: 'Telangana',
   });
 
   useEffect(() => {
     fetchData();
+
+    // Socket.io for real-time updates
+    socket.on('locationUpdated', (data: ClinicDTO[]) => {
+      setClinics(data);
+    });
+
+    return () => {
+      socket.off('locationUpdated');
+    };
   }, []);
 
   const fetchData = async () => {
@@ -69,12 +75,8 @@ export default function ClinicsPage() {
       setSelectedClinic(null);
       setFormData({
         name: '',
-        city: '',
-        state: 'Telangana',
-        area: '',
         phone: '',
-        email: '',
-        image: ''
+        state: 'Telangana',
       });
     }
     setIsModalOpen(true);
@@ -91,7 +93,7 @@ export default function ClinicsPage() {
         showToast('Facility registered successfully');
       }
       setIsModalOpen(false);
-      void fetchData();
+      // No manual fetchData needed here as socket handles it
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Facility update failed', 'error');
     }
@@ -102,7 +104,7 @@ export default function ClinicsPage() {
       try {
         await ClinicService.delete(id);
         showToast('Facility removed from network');
-        void fetchData();
+        // No manual fetchData needed here
       } catch (error) {
         showToast(error instanceof Error ? error.message : 'Delete failed', 'error');
       }
@@ -165,12 +167,7 @@ export default function ClinicsPage() {
                         <div className="flex-1 p-8">
                           <div className="flex items-start justify-between mb-8">
                             <div>
-                              <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent transition-colors">{clinic.area || clinic.name || 'Unnamed Clinic'}</h3>
-                              {(clinic.city || clinic.state) && (
-                                <p className="text-accent text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
-                                  {[clinic.city, clinic.state].filter(Boolean).join(', ')}
-                                </p>
-                              )}
+                              <h3 className="text-2xl font-bold text-text-primary group-hover:text-accent transition-colors">{clinic.name || 'Unnamed Clinic'}</h3>
                             </div>
                             <div className="flex gap-2">
                               <button onClick={() => handleOpenModal(clinic)} className="p-2.5 text-text-muted hover:text-text-primary transition-colors bg-text-primary/5 rounded-xl border border-border-subtle">
@@ -185,35 +182,15 @@ export default function ClinicsPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                               <div className="flex items-start gap-4">
-                                <MapPin size={18} className="text-accent mt-1 flex-shrink-0" />
-                                <div>
-                                  <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest block mb-1">{t('area') || 'Area'}</span>
-                                  <p className="text-xs text-text-secondary leading-relaxed font-light">{clinic.area}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="space-y-4">
-                              <div className="flex items-start gap-4">
                                 <Phone size={18} className="text-accent mt-1 flex-shrink-0" />
                                 <div>
                                   <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest block mb-1">{t('inquiry')}</span>
                                   <p className="text-xs text-text-secondary font-mono tracking-tight">{clinic.phone}</p>
-                                  <div className="flex items-center gap-2 mt-1 text-[10px] text-text-muted">
-                                    <Mail size={12} /> {clinic.email}
-                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          <div className="mt-10 flex gap-4">
-                            <button className="flex-1 bg-text-primary/5 hover:bg-text-primary/10 border border-border-subtle text-[10px] font-bold text-text-secondary uppercase tracking-widest py-4 rounded-2xl flex items-center justify-center gap-3 transition-all group-hover:border-accent/20">
-                              <Navigation size={14} className="text-accent" /> {t('navigateMap')}
-                            </button>
-                            <button className="flex-1 bg-accent/5 hover:bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent uppercase tracking-widest py-4 rounded-2xl flex items-center justify-center gap-3 transition-all">
-                              <Globe size={14} /> {t('websitePortal')}
-                            </button>
-                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -234,9 +211,9 @@ export default function ClinicsPage() {
         <form onSubmit={handleSubmit} className="p-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <FloatingSelect 
-              label="Branch" 
+              label="Branch (State)" 
               required
-              value={formData.state || ''}
+              value={formData.state || 'Telangana'}
               onChange={(e) => setFormData({...formData, state: e.target.value as any})}
               options={[
                 { label: 'Telangana', value: 'Telangana' },
@@ -244,28 +221,17 @@ export default function ClinicsPage() {
               ]}
             />
             <FloatingInput 
-              label={t('phone')} 
+              label="Clinic Name (Area based)" 
               required
-              value={formData.phone || ''}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              value={formData.name || ''}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
             />
           </div>
-
           <FloatingInput 
-            label={t('email')} 
+            label={t('phone')} 
             required
-            type="email"
-            value={formData.email || ''}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-          />
-
-
-
-          <FloatingTextArea 
-            label={t('area') || 'Area'} 
-            required
-            value={formData.area || ''}
-            onChange={(e) => setFormData({...formData, area: e.target.value})}
+            value={formData.phone || ''}
+            onChange={(e) => setFormData({...formData, phone: e.target.value})}
           />
 
           <div className="flex justify-end gap-4 pt-8 border-t border-border-subtle">
