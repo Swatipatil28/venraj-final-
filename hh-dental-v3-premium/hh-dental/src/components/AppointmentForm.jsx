@@ -73,7 +73,7 @@ function validateStep(form, step, t) {
 // ── Sub-components ───────────────────────────────────────────────────────────
 function StepDot({ active, done, index, label }) {
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
         style={{
@@ -84,7 +84,7 @@ function StepDot({ active, done, index, label }) {
       >
         {index + 1}
       </div>
-      <span className={`hidden text-sm font-medium sm:block ${active ? "text-[var(--text)]" : "text-[var(--muted)]"}`}>{label}</span>
+      <span className={`text-[10px] sm:text-sm font-medium ${active ? "text-[var(--text)]" : "text-[var(--muted)]"}`}>{label}</span>
     </div>
   );
 }
