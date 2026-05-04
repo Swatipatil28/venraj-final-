@@ -39,7 +39,6 @@ const doctorSchema = new mongoose.Schema(
         ref: "Clinic",
       },
     ],
-
     isActive: {
       type: Boolean,
       default: true,

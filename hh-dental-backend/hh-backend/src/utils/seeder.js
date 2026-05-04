@@ -151,34 +151,41 @@ const seed = async () => {
   await connectDB();
   console.log("🌱  Starting database seed...\n");
 
-  // Clear existing data
-  await Promise.all([
-    Clinic.deleteMany({}),
-    Doctor.deleteMany({}),
-    Service.deleteMany({}),
-    AdminUser.deleteMany({}),
-    Testimonial.deleteMany({}),
-  ]);
-  console.log("🗑   Cleared existing collections.");
-
   // Seed testimonials
-  const testimonials = await Testimonial.insertMany(testimonialsData);
-  console.log(`✅  ${testimonials.length} testimonials seeded.`);
+  for (const t of testimonialsData) {
+    await Testimonial.findOneAndUpdate({ name: t.name, treatment: t.treatment }, t, { upsert: true });
+  }
+  console.log("✅ Testimonials synced.");
 
   // Seed clinics
-  const clinics = await Clinic.insertMany(clinicsData);
-  console.log(`✅  ${clinics.length} clinics seeded.`);
+  for (const c of clinicsData) {
+    await Clinic.findOneAndUpdate({ name: c.name }, c, { upsert: true });
+  }
+  const clinics = await Clinic.find({});
+  console.log("✅ Clinics synced.");
 
-  // Seed services
-  const services = await Service.insertMany(servicesData);
-  console.log(`✅  ${services.length} services seeded.`);
+  // Seed services (with image preservation)
+  for (const s of servicesData) {
+    const existing = await Service.findOne({ title: s.title });
+    if (existing) {
+      const updateData = { ...s };
+      // Preserve image if it's already set to an uploaded file or manually changed
+      if (existing.image && (existing.image.includes("/uploads/") || existing.image !== s.image)) {
+        delete updateData.image;
+      }
+      await Service.updateOne({ title: s.title }, { $set: updateData });
+    } else {
+      await Service.create(s);
+    }
+  }
+  console.log("✅ Services synced (images preserved).");
 
   // Map clinic names to IDs for doctor assignment
   const clinicMap = {};
   clinics.forEach((c) => { clinicMap[c.name] = c._id; });
 
-  // Seed doctors with actual clinic references
-  const doctorsData = [
+  // Seed doctors (No images as requested)
+  const doctorsDataToSeed = [
     {
       name: "Dr Harshita Akurathi",
       specialization: ["Prosthodontist", "Implantologist", "Cosmetic Dentist", "Aesthetic Dentist"],
@@ -186,7 +193,6 @@ const seed = async () => {
       qualifications: "MDS (Prosthodontics)",
       bio: "Dr. Harshita specializes in dental implants and cosmetic dentistry, bringing smiles back to life.",
       state: "Telangana",
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2",
       clinics: [clinicMap["H&H Kondapur"], clinicMap["H&H Manikonda"], clinicMap["H&H Tirupati"]],
     },
     {
@@ -196,22 +202,26 @@ const seed = async () => {
       qualifications: "MDS (Oral & Maxillofacial Surgery)",
       bio: "Dr. Harshith is an expert in complex oral surgeries and facial aesthetics.",
       state: "Andhra Pradesh",
-      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d",
       clinics: [clinicMap["H&H Vijayawada"], clinicMap["H&H Guntur"], clinicMap["H&H Kondapur"]],
     },
   ];
 
-  const doctors = await Doctor.insertMany(doctorsData);
-  console.log(`✅  ${doctors.length} doctors seeded.`);
+  for (const d of doctorsDataToSeed) {
+    await Doctor.findOneAndUpdate({ name: d.name }, d, { upsert: true });
+  }
+  console.log("✅ Doctors synced (images removed).");
 
   // Seed admin user
-  const admin = await AdminUser.create({
-    name: "H&H Admin",
-    email: process.env.ADMIN_EMAIL || "admin@hhdental.in",
-    password: process.env.ADMIN_PASSWORD || "Admin@1234",
-    role: "super_admin",
-  });
-  console.log(`✅  Admin user created: ${admin.email}`);
+  let admin = await AdminUser.findOne({ email: process.env.ADMIN_EMAIL || "admin@hhdental.in" });
+  if (!admin) {
+    admin = await AdminUser.create({
+      name: "H&H Admin",
+      email: process.env.ADMIN_EMAIL || "admin@hhdental.in",
+      password: process.env.ADMIN_PASSWORD || "Admin@1234",
+      role: "super_admin",
+    });
+    console.log(`✅ Admin user created: ${admin.email}`);
+  }
 
   console.log("\n🎉  Seed complete!\n");
   console.log("─────────────────────────────────────");
