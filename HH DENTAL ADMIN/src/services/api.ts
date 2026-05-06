@@ -6,7 +6,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -16,8 +16,23 @@ const api = axios.create({
   },
 });
 
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+export async function fetchOnce<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  if (pendingRequests.has(key)) {
+    return pendingRequests.get(key) as Promise<T>;
+  }
+
+  const promise = fn().finally(() => {
+    pendingRequests.delete(key);
+  });
+
+  pendingRequests.set(key, promise);
+  return promise as Promise<T>;
+}
+
 api.interceptors.request.use((config) => {
-  console.log('API CALL:', config.url);
+  if (import.meta.env.DEV) console.log('API CALL:', config.url);
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -31,6 +46,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
       window.location.href = '/login';
+    }
+
+    if (error.response?.status === 429) {
+      console.warn('Rate limited - skipping retry');
+      return Promise.reject(new Error('Too many requests. Please try again later.'));
     }
 
     if (error.code === 'ECONNABORTED') {

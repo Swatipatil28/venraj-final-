@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { getServices } from "../services/api.service";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
 import PageHero from "../components/PageHero";
 import SectionIntro from "../components/SectionIntro";
@@ -10,9 +10,21 @@ import { CardSkeleton } from "../components/LoadingSkeleton";
 export default function ServicesPage() {
   const { t } = useLanguage();
   const [tab, setTab] = useState("dental");
-  const { data, loading } = useApiResource(getServices, [], []);
+  const { data, loading, error, reload } = useRealtimeResource(getServices, {
+    eventName: "serviceUpdated",
+    initialData: [],
+  });
 
-  const filtered = useMemo(() => data.filter((item) => item.category === tab), [data, tab]);
+  const filtered = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+    const result = data.filter((item) => {
+      const itemCat = String(item?.category || "").toLowerCase().trim();
+      const currentTab = String(tab || "").toLowerCase().trim();
+      return itemCat === currentTab;
+    });
+    console.log(`[ServicesPage] Tab: ${tab}, Total: ${data.length}, Filtered: ${result.length}, Loading: ${loading}, Error:`, error);
+    return result;
+  }, [data, tab, loading, error]);
 
   return (
     <>
@@ -32,35 +44,61 @@ export default function ServicesPage() {
             body="The tabs keep comparison fast while preserving a polished, editorial feel."
           />
 
-          <div className="mb-10 inline-flex rounded-full border border-[rgba(240,214,156,0.14)] bg-[rgba(255,255,255,0.035)] p-1">
-            {[
-              { id: "dental", label: t("services.dentalTab") },
-              { id: "aesthetic", label: t("services.aestheticTab") },
-            ].map((item) => {
-              const active = tab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setTab(item.id)}
-                  className={`rounded-full px-5 py-2.5 text-sm transition ${
-                    active ? "bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-[#130f0a]" : "text-[var(--muted)]"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
+          <div className="flex flex-wrap items-center justify-between gap-6 mb-10">
+            <div className="inline-flex rounded-full border border-[rgba(240,214,156,0.14)] bg-[rgba(255,255,255,0.035)] p-1">
+              {[
+                { id: "dental", label: t("services.dentalTab") },
+                { id: "aesthetic", label: t("services.aestheticTab") },
+              ].map((item) => {
+                const active = tab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setTab(item.id)}
+                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition ${
+                      active ? "bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-[#130f0a]" : "text-[var(--muted)] hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button 
+              onClick={() => reload()}
+              className="text-xs font-bold uppercase tracking-widest text-[var(--primary)] hover:opacity-80 transition"
+            >
+              ↻ {t("common.reload") || "Reload"}
+            </button>
           </div>
 
-          {loading ? <CardSkeleton count={6} /> : null}
-          {!loading ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filtered.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
+          {error && (
+            <div className="glass-panel mb-10 rounded-[24px] p-8 text-center border-red-500/20">
+              <p className="text-red-400 font-bold mb-2">Failed to load services</p>
+              <p className="text-sm text-[var(--muted)] mb-4">{error.message || "Please check your internet connection."}</p>
+              <button onClick={() => reload()} className="cta-primary py-2 px-6 text-sm">Try Again</button>
             </div>
-          ) : null}
+          )}
+
+          {loading ? <CardSkeleton count={6} /> : null}
+          
+          {!loading && !error && (
+            <>
+              {filtered.length === 0 ? (
+                <div className="py-20 text-center opacity-50">
+                  <p>No services found in this category.</p>
+                </div>
+              ) : (
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  {filtered.map((service) => (
+                    <ServiceCard key={service.id || service._id} service={service} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
     </>

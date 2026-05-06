@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { getServices } from "../services/api.service";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
 import SectionIntro from "../components/SectionIntro";
 import ServiceCard from "../components/ServiceCard";
@@ -9,12 +9,16 @@ import { CardSkeleton, PanelSkeleton } from "../components/LoadingSkeleton";
 export default function ServiceDetailPage() {
   const { id } = useParams();
   const { t } = useLanguage();
-  const { data, loading } = useApiResource(getServices, [], []);
+  const { data, loading } = useRealtimeResource(getServices, {
+    eventName: "serviceUpdated",
+    initialData: [],
+  });
 
-  const service = data.find((item) => item.id === id);
-  let related = data.filter((item) => item.id !== id && item.category === service?.category).slice(0, 3);
-  if (related.length === 0 && data.length > 0) {
-    related = data.filter((item) => item.id !== id).slice(0, 3);
+  const services = Array.isArray(data) ? data : [];
+  const service = services.find((item) => item.id === id || item._id === id);
+  let related = services.filter((item) => item.id !== id && item._id !== id && item.category === service?.category).slice(0, 3);
+  if (related.length === 0 && services.length > 0) {
+    related = services.filter((item) => item.id !== id && item._id !== id).slice(0, 3);
   }
 
   if (loading) {
@@ -51,7 +55,7 @@ export default function ServiceDetailPage() {
         <div className="container-shell relative flex min-h-[72vh] items-end py-16">
           <div className="max-w-3xl pb-6">
             <p className="eyebrow mb-4 capitalize">{service.category}</p>
-            <h1 className="luxury-title">{service.title}</h1>
+            <h1 className="luxury-title">{service.title || service.name}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{service.description}</p>
             <Link to="/book-appointment" className="cta-primary mt-8 inline-flex">
               {t("common.bookNow")}
@@ -65,7 +69,7 @@ export default function ServiceDetailPage() {
           <div>
             <SectionIntro eyebrow={t("services.benefits")} title="Why patients choose this treatment." />
             <div className="space-y-4">
-              {service.benefits.map((benefit) => (
+              {(Array.isArray(service.benefits) ? service.benefits : []).map((benefit) => (
                 <div key={benefit} className="glass-panel rounded-[24px] p-5 text-sm leading-7 text-[var(--muted)]">
                   {benefit}
                 </div>
@@ -76,7 +80,7 @@ export default function ServiceDetailPage() {
           <div>
             <SectionIntro eyebrow={t("services.process")} title="A polished, step-by-step treatment journey." />
             <div className="space-y-4">
-              {service.process.map((item, index) => (
+              {(Array.isArray(service.process) ? service.process : Array.isArray(service.processSteps) ? service.processSteps : []).map((item, index) => (
                 <div key={item} className="glass-panel rounded-[24px] p-5">
                   <p className="eyebrow mb-2">Step {index + 1}</p>
                   <p className="text-base leading-7 text-[var(--muted)]">{item}</p>

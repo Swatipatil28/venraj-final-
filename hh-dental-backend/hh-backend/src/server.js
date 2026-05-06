@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const http = require("http");
 const app = require("./app");
 const connectDB = require("./config/db");
 const { initSocket } = require("./utils/socket");
@@ -9,25 +10,21 @@ const HOST = process.env.HOST || "0.0.0.0";
 
 const startServer = async () => {
   await connectDB();
+  const server = http.createServer(app);
 
-  const server = app.listen(PORT, HOST, () => {
-    console.log("H&H dental services Backend API");
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-    console.log(`Health: http://localhost:${PORT}/health`);
-  });
-
-  // Initialize Socket.io
   initSocket(server);
+
+  server.listen(5001, () => {
+    console.log("✅ Server running on http://localhost:5001");
+  });
 
   server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Stop the existing process on ${PORT} and restart the backend.`);
-      process.exit(1);
+      console.error(`Port 5001 is already in use. Please stop the existing process.`);
+      // Handle port conflict gracefully (log error only, no process.exit)
+    } else {
+      console.error("Server error:", err.message);
     }
-
-    console.error("Server failed to start:", err.message);
-    process.exit(1);
   });
 
   const shutdown = (signal) => {

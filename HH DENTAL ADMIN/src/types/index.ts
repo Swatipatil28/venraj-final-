@@ -67,6 +67,7 @@ export interface ServiceDTO {
   processSteps: string[];
   icon?: string;
   image?: string;
+  public_id?: string;
 }
 
 export interface User {

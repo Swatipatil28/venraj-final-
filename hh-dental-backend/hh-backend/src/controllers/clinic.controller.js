@@ -2,10 +2,17 @@ const Clinic = require("../models/Clinic");
 const { sendSuccess, sendError } = require("../utils/response");
 const { emitEvent } = require("../utils/socket");
 
-// Helper to broadcast full clinics list
+const shapeClinic = (clinic) => ({
+  _id: clinic._id,
+  id: clinic._id,
+  name: clinic.name,
+  state: clinic.state,
+  phone: clinic.phone,
+});
+
 const broadcastClinics = async () => {
   const clinics = await Clinic.find({ isActive: true }).sort({ state: 1, name: 1 });
-  emitEvent("locationUpdated", clinics);
+  emitEvent("locationUpdated", clinics.map(shapeClinic));
 };
 
 // GET /api/clinics
@@ -17,7 +24,7 @@ const getClinics = async (req, res, next) => {
     if (state) filter.state = state;
 
     const clinics = await Clinic.find(filter).sort({ state: 1, name: 1 });
-    return sendSuccess(res, clinics, "Clinics retrieved");
+    return sendSuccess(res, clinics.map(shapeClinic), "Clinics retrieved");
   } catch (err) {
     next(err);
   }
@@ -28,7 +35,7 @@ const getClinicById = async (req, res, next) => {
   try {
     const clinic = await Clinic.findById(req.params.id);
     if (!clinic) return sendError(res, "Clinic not found", 404);
-    return sendSuccess(res, clinic);
+    return sendSuccess(res, shapeClinic(clinic));
   } catch (err) {
     next(err);
   }
@@ -40,7 +47,7 @@ const createClinic = async (req, res, next) => {
     const payload = { ...req.body };
     const clinic = await Clinic.create(payload);
     await broadcastClinics();
-    return sendSuccess(res, clinic, "Clinic created successfully", 201);
+    return sendSuccess(res, shapeClinic(clinic), "Clinic created successfully", 201);
   } catch (err) {
     next(err);
   }
@@ -57,7 +64,7 @@ const updateClinic = async (req, res, next) => {
     );
     if (!clinic) return sendError(res, "Clinic not found", 404);
     await broadcastClinics();
-    return sendSuccess(res, clinic, "Clinic updated successfully");
+    return sendSuccess(res, shapeClinic(clinic), "Clinic updated successfully");
   } catch (err) {
     next(err);
   }

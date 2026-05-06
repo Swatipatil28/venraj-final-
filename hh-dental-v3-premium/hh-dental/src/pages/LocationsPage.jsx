@@ -1,8 +1,6 @@
 import { getClinics } from "../services/api.service";
-import socket from "../utils/socket";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
-import { useEffect } from "react";
 import PageHero from "../components/PageHero";
 import SectionIntro from "../components/SectionIntro";
 import LocationCard from "../components/LocationCard";
@@ -10,17 +8,10 @@ import { CardSkeleton } from "../components/LoadingSkeleton";
 
 export default function LocationsPage() {
   const { t } = useLanguage();
-  const { data, loading, setData } = useApiResource(getClinics, [], []);
-
-  useEffect(() => {
-    socket.on("locationUpdated", (updatedData) => {
-      setData(updatedData);
-    });
-
-    return () => {
-      socket.off("locationUpdated");
-    };
-  }, [setData]);
+  const { data, loading } = useRealtimeResource(getClinics, {
+    eventName: "locationUpdated",
+    initialData: [],
+  });
 
   const regions = [
     { key: "Telangana", title: t("locations.telangana") },
@@ -42,7 +33,7 @@ export default function LocationsPage() {
           {loading ? <CardSkeleton count={4} /> : null}
           {!loading
             ? regions.map((region) => {
-                const clinics = data.filter((clinic) => clinic.state === region.key);
+                const clinics = (Array.isArray(data) ? data : []).filter((clinic) => clinic?.state === region.key);
                 if (!clinics.length) return null;
 
                 return (

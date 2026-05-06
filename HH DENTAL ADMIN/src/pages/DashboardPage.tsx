@@ -20,6 +20,7 @@ import { AppointmentService } from '../services/adminService';
 import { AppointmentDTO } from '../types';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useToast } from '../components/Toast';
+import { useFetchGuard } from '../hooks/useFetchGuard';
 
 export default function DashboardPage() {
   const { t, language } = useLanguageStore();
@@ -27,6 +28,8 @@ export default function DashboardPage() {
   const [appointments, setAppointments] = useState<AppointmentDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentDTO | null>(null);
+
+  const { guardedFetch } = useFetchGuard();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -42,7 +45,8 @@ export default function DashboardPage() {
       }
     };
 
-    fetchDashboardData();
+    void guardedFetch(fetchDashboardData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const today = new Date().toISOString().split('T')[0];

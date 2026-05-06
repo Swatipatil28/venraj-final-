@@ -1,7 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { getDoctors } from "../services/api.service";
-import socket from "../utils/socket";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
 import PageHero from "../components/PageHero";
 import SectionIntro from "../components/SectionIntro";
@@ -12,27 +11,20 @@ export default function DoctorsPage() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState(t("doctors.all"));
   const [stateFilter, setStateFilter] = useState("All");
-  const { data, loading, setData } = useApiResource(getDoctors, [], [t]);
-
-  useEffect(() => {
-    socket.on("doctorUpdated", (updatedData) => {
-      setData(updatedData);
-    });
-
-    return () => {
-      socket.off("doctorUpdated");
-    };
-  }, [setData]);
+  const { data, loading } = useRealtimeResource(getDoctors, {
+    eventName: "doctorUpdated",
+    initialData: [],
+  });
 
   const specializations = useMemo(() => {
-    const allSpecs = data.flatMap((item) => 
-      Array.isArray(item.specialization) ? item.specialization : [item.specialization]
+    const allSpecs = (Array.isArray(data) ? data : []).flatMap((item) =>
+      Array.isArray(item?.specialization) ? item.specialization : item?.specialization ? [item.specialization] : []
     );
     return [t("doctors.all"), ...new Set(allSpecs)];
   }, [data, t]);
 
-  const filtered = data.filter((doctor) => {
-    const specs = Array.isArray(doctor.specialization) ? doctor.specialization : [doctor.specialization];
+  const filtered = (Array.isArray(data) ? data : []).filter((doctor) => {
+    const specs = Array.isArray(doctor?.specialization) ? doctor.specialization : doctor?.specialization ? [doctor.specialization] : [];
     const matchesSpec = filter === t("doctors.all") || specs.includes(filter);
     const matchesState = stateFilter === "All" || doctor.state === stateFilter;
     return matchesSpec && matchesState;

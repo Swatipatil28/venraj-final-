@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { getClinics, getDoctors } from "../services/api.service";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
 import HeroSection from "../components/HeroSection";
 import Services from "../components/Services";
@@ -13,8 +13,8 @@ import { CardSkeleton } from "../components/LoadingSkeleton";
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const doctors = useApiResource(getDoctors, [], []);
-  const clinics = useApiResource(getClinics, [], []);
+  const doctors = useRealtimeResource(getDoctors, { eventName: "doctorUpdated", initialData: [] });
+  const clinics = useRealtimeResource(getClinics, { eventName: "locationUpdated", initialData: [] });
 
   return (
     <>

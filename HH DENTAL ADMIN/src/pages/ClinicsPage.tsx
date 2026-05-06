@@ -24,13 +24,15 @@ import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/F
 import { useLanguageStore } from '../store/useLanguageStore';
 
 import { useToast } from '../components/Toast';
-import { socket } from '../utils/socket';
+import { useRealtimeCollection } from '../hooks/useRealtimeCollection';
 
 export default function ClinicsPage() {
   const { t } = useLanguageStore();
   const { showToast } = useToast();
-  const [clinics, setClinics] = useState<ClinicDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: clinics, loading, reload } = useRealtimeCollection<ClinicDTO>(ClinicService.getAll, {
+    eventName: 'locationUpdated',
+    initialData: [],
+  });
   
   // CRUD State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,32 +42,6 @@ export default function ClinicsPage() {
     phone: '',
     state: 'Telangana',
   });
-
-  useEffect(() => {
-    fetchData();
-
-    // Socket.io for real-time updates
-    socket.on('locationUpdated', (data: ClinicDTO[]) => {
-      setClinics(data);
-    });
-
-    return () => {
-      socket.off('locationUpdated');
-    };
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const data = await ClinicService.getAll();
-      setClinics(data);
-    } catch (error) {
-      console.error('Failed to fetch clinics:', error);
-      showToast(error instanceof Error ? error.message : 'Failed to fetch clinics', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (clinic?: ClinicDTO) => {
     if (clinic) {
@@ -112,8 +88,8 @@ export default function ClinicsPage() {
   };
 
   const groups = {
-    'Telangana': clinics.filter(c => c.state === 'Telangana'),
-    'Andhra Pradesh': clinics.filter(c => c.state === 'Andhra Pradesh'),
+    'Telangana': (Array.isArray(clinics) ? clinics : []).filter(c => c.state === 'Telangana'),
+    'Andhra Pradesh': (Array.isArray(clinics) ? clinics : []).filter(c => c.state === 'Andhra Pradesh'),
   };
 
   return (

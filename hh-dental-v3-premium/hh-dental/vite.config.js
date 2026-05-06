@@ -17,7 +17,21 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    port: 5174,
+    strictPort: true,
     open: true,
+  },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          socket: ['socket.io-client'],
+          http: ['axios'],
+        },
+      },
+    },
   },
 })

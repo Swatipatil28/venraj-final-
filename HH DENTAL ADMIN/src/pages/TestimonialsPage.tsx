@@ -10,6 +10,7 @@ import api from '../services/api';
 import Modal from '../components/Modal';
 import FloatingInput, { FloatingTextArea, FloatingSelect } from '../components/FloatingInput';
 import { useToast } from '../components/Toast';
+import { useFetchGuard } from '../hooks/useFetchGuard';
 
 export default function TestimonialsPage() {
   const { showToast } = useToast();
@@ -27,21 +28,24 @@ export default function TestimonialsPage() {
     displayOrder: 0
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { guardedFetch } = useFetchGuard();
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const data = await api.get('/admin/testimonials');
-      setTestimonials(Array.isArray(data) ? data : []);
-    } catch (error) {
-      showToast('Failed to fetch testimonials', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await api.get('/admin/testimonials');
+        setTestimonials(Array.isArray(data) ? data : []);
+      } catch (error) {
+        showToast('Failed to fetch testimonials', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void guardedFetch(fetchData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpenModal = (item?: any) => {
     if (item) {

@@ -13,7 +13,8 @@ export default function ServiceCard({ service }) {
       <div className="relative aspect-[16/10] overflow-hidden">
         <img
           src={service.image || service.imageUrl || "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80"}
-          alt={service.title}
+          alt={service.title || service.name || "Dental service"}
+          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           onError={(e) => { 
             e.target.src = "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80"; 
@@ -28,7 +29,7 @@ export default function ServiceCard({ service }) {
             {service.category}
           </span>
           <h3 className="text-xl sm:text-2xl font-extrabold text-[#0F172A] leading-tight mb-3 transition-colors group-hover:text-[var(--primary)]">
-            {service.title}
+            {service.title || service.name}
           </h3>
           <p className="text-sm leading-relaxed text-[#64748B] line-clamp-3 font-medium">
             {service.shortDescription || service.description}
@@ -36,7 +37,7 @@ export default function ServiceCard({ service }) {
         </div>
         
         <Link 
-          to={`/services/${service.id}`} 
+          to={`/services/${service.id || service._id}`} 
           className="mt-auto inline-flex items-center gap-3 text-sm font-bold text-[var(--primary)] transition-all group/link"
         >
           <span className="relative">

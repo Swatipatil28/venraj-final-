@@ -16,7 +16,7 @@ export default function DoctorCard({ doctor }) {
           {doctor.name}
         </h3>
         <p className="text-sm font-bold text-[var(--primary)] uppercase tracking-widest mb-4">
-          Maxillofacial Prosthodontics and Implantology
+          {specializations[0] || "Dental specialist"}
         </p>
       </div>
 

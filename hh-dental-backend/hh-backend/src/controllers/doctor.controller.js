@@ -2,18 +2,20 @@ const Doctor = require("../models/Doctor");
 const { sendSuccess, sendError } = require("../utils/response");
 const { emitEvent } = require("../utils/socket");
 
-// Helper to broadcast full doctors list
+const shapeDoctor = (doctor) => ({
+  _id: doctor._id,
+  id: doctor._id,
+  name: doctor.name,
+  specialization: Array.isArray(doctor.specialization) ? doctor.specialization : [],
+  qualifications: doctor.qualifications,
+  bio: doctor.bio,
+  state: doctor.state,
+  clinics: Array.isArray(doctor.clinics) ? doctor.clinics : [],
+});
+
 const broadcastDoctors = async () => {
   const doctors = await Doctor.find({ isActive: true }).sort({ name: 1 });
-  const shaped = doctors.map((d) => ({
-    id: d._id,
-    name: d.name,
-    specialization: d.specialization,
-    qualifications: d.qualifications,
-    bio: d.bio,
-    state: d.state,
-  }));
-  emitEvent("doctorUpdated", shaped);
+  emitEvent("doctorUpdated", doctors.map(shapeDoctor));
 };
 
 // GET /api/doctors
@@ -26,16 +28,7 @@ const getDoctors = async (req, res, next) => {
 
     const doctors = await Doctor.find(filter).sort({ name: 1 });
 
-    const shaped = doctors.map((d) => ({
-      id: d._id,
-      name: d.name,
-      specialization: d.specialization,
-      qualifications: d.qualifications,
-      bio: d.bio,
-      state: d.state,
-    }));
-
-    return sendSuccess(res, shaped, "Doctors retrieved");
+    return sendSuccess(res, doctors.map(shapeDoctor), "Doctors retrieved");
   } catch (err) {
     next(err);
   }
@@ -46,7 +39,7 @@ const getDoctorById = async (req, res, next) => {
   try {
     const doctor = await Doctor.findById(req.params.id);
     if (!doctor) return sendError(res, "Doctor not found", 404);
-    return sendSuccess(res, doctor);
+    return sendSuccess(res, shapeDoctor(doctor));
   } catch (err) {
     next(err);
   }
@@ -58,7 +51,7 @@ const createDoctor = async (req, res, next) => {
     const payload = { ...req.body };
     const doctor = await Doctor.create(payload);
     await broadcastDoctors();
-    return sendSuccess(res, doctor, "Doctor created successfully", 201);
+    return sendSuccess(res, shapeDoctor(doctor), "Doctor created successfully", 201);
   } catch (err) {
     next(err);
   }
@@ -75,7 +68,7 @@ const updateDoctor = async (req, res, next) => {
     );
     if (!doctor) return sendError(res, "Doctor not found", 404);
     await broadcastDoctors();
-    return sendSuccess(res, doctor, "Doctor updated successfully");
+    return sendSuccess(res, shapeDoctor(doctor), "Doctor updated successfully");
   } catch (err) {
     next(err);
   }

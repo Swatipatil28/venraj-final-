@@ -37,6 +37,10 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       default: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
     },
+    public_id: {
+      type: String,
+      default: "",
+    },
     isActive: {
       type: Boolean,
       default: true,

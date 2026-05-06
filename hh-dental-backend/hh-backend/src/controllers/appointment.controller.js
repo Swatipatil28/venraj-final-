@@ -6,7 +6,42 @@ const { generateWhatsAppLink, generatePatientWhatsAppLink } = require("../utils/
 const { PAGINATION, APPOINTMENT_STATUS } = require("../config/constants");
 const { emitEvent } = require("../utils/socket");
 
-// Helper to broadcast recent appointments
+const shapeAppointment = (appointment) => ({
+  _id: appointment._id,
+  patientName: appointment.patientName,
+  phone: appointment.phone,
+  age: appointment.age || 0,
+  gender: appointment.gender || "Other",
+  symptoms: appointment.symptoms || "",
+  medications: appointment.medications || "",
+  medicalHistory: appointment.medicalHistory || "",
+  notes: appointment.notes || "",
+  status: appointment.status || APPOINTMENT_STATUS.PENDING,
+  preferredDate: appointment.preferredDate,
+  createdAt: appointment.createdAt,
+  clinicId: appointment.clinicId
+    ? {
+        _id: appointment.clinicId._id,
+        name: appointment.clinicId.name,
+        city: appointment.clinicId.city,
+      }
+    : null,
+  doctorId: appointment.doctorId
+    ? {
+        _id: appointment.doctorId._id,
+        name: appointment.doctorId.name,
+        specialization: appointment.doctorId.specialization,
+      }
+    : null,
+  serviceId: appointment.serviceId
+    ? {
+        _id: appointment.serviceId._id,
+        title: appointment.serviceId.title,
+        category: appointment.serviceId.category,
+      }
+    : null,
+});
+
 const broadcastAppointments = async () => {
   const appointments = await Appointment.find({})
     .populate("clinicId", "name city")
@@ -14,7 +49,7 @@ const broadcastAppointments = async () => {
     .populate("serviceId", "title category")
     .sort({ createdAt: -1 })
     .limit(100); // Limit to 100 recent ones for performance
-  emitEvent("appointmentUpdated", appointments);
+  emitEvent("appointmentUpdated", appointments.map(shapeAppointment));
 };
 
 // ─────────────────────────────────────────────────────────
@@ -72,7 +107,7 @@ const createAppointment = async (req, res, next) => {
     );
 
     await broadcastAppointments();
-    emitEvent("newAppointment", appointment);
+    emitEvent("newAppointment", shapeAppointment(appointment));
 
     return sendSuccess(
       res,
@@ -181,7 +216,7 @@ const getAppointments = async (req, res, next) => {
       Appointment.countDocuments(filter),
     ]);
 
-    return sendPaginated(res, appointments, total, pageNum, limitNum, "Appointments retrieved");
+    return sendPaginated(res, appointments.map(shapeAppointment), total, pageNum, limitNum, "Appointments retrieved");
   } catch (err) {
     next(err);
   }
@@ -253,7 +288,7 @@ const updateAppointment = async (req, res, next) => {
 
     await broadcastAppointments();
 
-    return sendSuccess(res, appointment, "Appointment updated successfully");
+    return sendSuccess(res, shapeAppointment(appointment), "Appointment updated successfully");
   } catch (err) {
     next(err);
   }
@@ -283,7 +318,7 @@ const confirmAppointment = async (req, res, next) => {
 
     await broadcastAppointments();
 
-    return sendSuccess(res, appointment, "Appointment confirmed successfully");
+    return sendSuccess(res, shapeAppointment(appointment), "Appointment confirmed successfully");
   } catch (err) {
     next(err);
   }

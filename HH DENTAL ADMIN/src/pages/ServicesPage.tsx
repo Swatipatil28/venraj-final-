@@ -20,6 +20,7 @@ import {
   Search
 } from 'lucide-react';
 import { ServiceService, UploadService } from '../services/adminService';
+import { useRealtimeCollection } from '../hooks/useRealtimeCollection';
 import { ServiceDTO, ServiceCategory } from '../types';
 import Modal from '../components/Modal';
 import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/FloatingInput';
@@ -31,8 +32,10 @@ import { useToast } from '../components/Toast';
 export default function ServicesPage() {
   const { t } = useLanguageStore();
   const { showToast } = useToast();
-  const [services, setServices] = useState<ServiceDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: services, loading, reload } = useRealtimeCollection<ServiceDTO>(ServiceService.getAll, {
+    eventName: 'serviceUpdated',
+    initialData: [],
+  });
   const [activeTab, setActiveTab] = useState<ServiceCategory | 'All'>('All');
   
   // CRUD State
@@ -65,23 +68,6 @@ export default function ServicesPage() {
     icon: 'Sparkles',
     image: ''
   } as any);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const data = await ServiceService.getAll();
-      setServices(data);
-    } catch (error) {
-      console.error('Failed to fetch services:', error);
-      showToast(error instanceof Error ? error.message : 'Failed to fetch services', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOpenModal = (service?: ServiceDTO) => {
     if (service) {
@@ -120,7 +106,6 @@ export default function ServicesPage() {
         showToast('Service deployed successfully');
       }
       setIsModalOpen(false);
-      void fetchData();
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Service sync failed', 'error');
     }
@@ -131,7 +116,6 @@ export default function ServicesPage() {
       try {
         await ServiceService.delete(id);
         showToast('Service removed from catalog');
-        void fetchData();
       } catch (error) {
         showToast(error instanceof Error ? error.message : 'Delete failed', 'error');
       }
@@ -140,11 +124,11 @@ export default function ServicesPage() {
 
   const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
 
-  const filteredServices = services.filter((service) => {
+  const filteredServices = (Array.isArray(services) ? services : []).filter((service) => {
     const query = globalSearchQuery.toLowerCase();
     const matchesSearch =
-      service.name.toLowerCase().includes(query) ||
-      service.description.toLowerCase().includes(query);
+      (service.name || '').toLowerCase().includes(query) ||
+      (service.description || '').toLowerCase().includes(query);
     const matchesCategory = activeTab === 'All' || service.category === activeTab;
     return matchesSearch && matchesCategory;
   });

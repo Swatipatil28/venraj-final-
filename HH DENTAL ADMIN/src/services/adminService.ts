@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import api from './api';
+import api, { fetchOnce } from './api';
 import { AppointmentDTO, AppointmentStatus, ClinicDTO, DoctorDTO, ServiceDTO, User } from '../types';
 
 type BackendAppointment = {
@@ -70,6 +70,8 @@ const normalizeStatus = (status?: string): AppointmentStatus => {
   return 'pending';
 };
 
+const ensureArray = <T>(value: T[] | undefined | null): T[] => (Array.isArray(value) ? value : []);
+
 const toBackendStatus = (status: AppointmentStatus) => {
   return status;
 };
@@ -127,8 +129,8 @@ const mapService = (service: BackendService): ServiceDTO => ({
   name: service.title || service.name || '',
   category: service.category.toLowerCase() === 'aesthetic' ? 'Aesthetic' : 'Dental',
   description: service.description,
-  benefits: service.benefits || [],
-  processSteps: service.process || service.processSteps || [],
+  benefits: ensureArray(service.benefits),
+  processSteps: ensureArray(service.process || service.processSteps),
   icon: service.icon || '',
   image: service.image || service.imageUrl || '',
 });
@@ -141,8 +143,10 @@ export const AuthService = {
 
 export const AppointmentService = {
   getAppointments: async () => {
-    const data = await api.get<BackendAppointment[], BackendAppointment[]>('/admin/appointments?limit=100');
-    return data.map(mapAppointment);
+    const data = await fetchOnce<BackendAppointment[]>('/admin/appointments?limit=100', () =>
+      api.get<BackendAppointment[], BackendAppointment[]>('/admin/appointments?limit=100')
+    );
+    return ensureArray(data).map(mapAppointment);
   },
   create: (data: Partial<AppointmentDTO>) =>
     api.post<{ appointmentRef: string }, { appointmentRef: string }>('/appointments', {
@@ -179,7 +183,7 @@ export const AppointmentService = {
 };
 
 export const ClinicService = {
-  getAll: () => api.get<ClinicDTO[], ClinicDTO[]>('/clinics'),
+  getAll: () => fetchOnce<ClinicDTO[]>('/clinics', () => api.get<ClinicDTO[], ClinicDTO[]>('/clinics')),
   create: (data: Partial<ClinicDTO>) => api.post<ClinicDTO, ClinicDTO>('/admin/clinics', data),
   update: (id: string, data: Partial<ClinicDTO>) => api.put<ClinicDTO, ClinicDTO>(`/admin/clinics/${id}`, data),
   delete: (id: string) => api.delete<{ success: boolean }, { success: boolean }>(`/admin/clinics/${id}`),
@@ -188,8 +192,8 @@ export const ClinicService = {
 export const DoctorService = {
   getAll: async () => {
     const clinics = await ClinicService.getAll();
-    const doctors = await api.get<BackendDoctor[], BackendDoctor[]>('/doctors');
-    return doctors.map((doctor) => mapDoctor(doctor, clinics));
+    const doctors = await fetchOnce<BackendDoctor[]>('/doctors', () => api.get<BackendDoctor[], BackendDoctor[]>('/doctors'));
+    return ensureArray(doctors).map((doctor) => mapDoctor(doctor, ensureArray(clinics)));
   },
   create: (data: Partial<DoctorDTO>) =>
     api.post<DoctorDTO, DoctorDTO>('/admin/doctors', {
@@ -225,8 +229,8 @@ export const DoctorService = {
 
 export const ServiceService = {
   getAll: async () => {
-    const services = await api.get<BackendService[], BackendService[]>('/services');
-    return services.map(mapService);
+    const services = await fetchOnce<BackendService[]>('/services', () => api.get<BackendService[], BackendService[]>('/services'));
+    return ensureArray(services).map(mapService);
   },
   create: (data: Partial<ServiceDTO>) =>
     api.post<ServiceDTO, ServiceDTO>('/admin/services', {
@@ -237,6 +241,7 @@ export const ServiceService = {
       process: data.processSteps || [],
       icon: data.icon,
       image: data.image,
+      public_id: data.public_id,
     }),
   update: (id: string, data: Partial<ServiceDTO>) =>
     api.put<ServiceDTO, ServiceDTO>(`/admin/services/${id}`, {
@@ -247,6 +252,7 @@ export const ServiceService = {
       process: data.processSteps || [],
       icon: data.icon,
       image: data.image,
+      public_id: data.public_id,
     }),
   delete: (id: string) => api.delete<{ success: boolean }, { success: boolean }>(`/admin/services/${id}`),
 };
@@ -255,8 +261,8 @@ export const UploadService = {
   uploadImage: async (file: File) => {
     const formData = new FormData();
     formData.append('image', file);
-    const data = await api.post<{ url: string; filename: string }, { url: string; filename: string }>(
-      '/admin/upload',
+    const data = await api.post<{ url: string; publicId?: string }, { url: string; publicId?: string }>(
+      '/admin/services/upload',
       formData,
       {
         headers: {
@@ -264,7 +270,6 @@ export const UploadService = {
         },
       }
     );
-    return data.url;
+    return { url: data.url, publicId: data.publicId };
   },
 };
-

@@ -1,12 +1,13 @@
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL
+  baseURL: API_BASE_URL,
 });
 
 const requestConfig = {
   timeout: 12000,
-  headers: { "Content-Type": "application/json" }
+  headers: { "Content-Type": "application/json" },
 };
 
 api.interceptors.request.use((config) => {
@@ -15,8 +16,10 @@ api.interceptors.request.use((config) => {
 });
 
 function normalizePayload(payload) {
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return payload.data;
+  if (payload && typeof payload === "object") {
+    if ("data" in payload) {
+      return payload.data;
+    }
   }
   return payload;
 }

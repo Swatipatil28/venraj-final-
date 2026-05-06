@@ -1,28 +1,38 @@
 import { io } from "socket.io-client";
 
-// In production, this should come from an environment variable
-const VITE_API_URL = import.meta.env.VITE_API_URL;
-const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-// Try VITE_API_URL, then VITE_API_BASE_URL (minus /api), 
-// then a production fallback, finally localhost if in dev
-const SOCKET_URL = VITE_API_URL || 
-                   (VITE_API_BASE_URL ? VITE_API_BASE_URL.replace(/\/api$/, "") : null) || 
-                   (import.meta.env.PROD ? "https://venraj-final.onrender.com" : "http://localhost:5001");
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5001";
 
 const socket = io(SOCKET_URL, {
-  transports: ["websocket"],
+  transports: ["polling", "websocket"],
   reconnection: true,
-  reconnectionAttempts: 10,
-  reconnectionDelay: 1000,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1000
 });
 
 socket.on("connect", () => {
-  console.log("%c[Socket.IO] Connected to server", "color: #2E86AB; font-weight: bold;");
+  console.log(
+    `✅ [Socket.IO] Connected! ID: ${socket.id} | Transport: ${socket.io.engine.transport.name}`
+  );
 });
 
-socket.on("disconnect", () => {
-  console.log("%c[Socket.IO] Disconnected from server", "color: #e11d48; font-weight: bold;");
+socket.on("disconnect", (reason) => {
+  console.warn(`⚠️  [Socket.IO] Disconnected - Reason: ${reason}`);
+});
+
+socket.on("connect_error", (error) => {
+  console.error(`❌ [Socket.IO] Connection Error:`, error);
+  if (error.message.includes("CORS")) {
+    console.error("   → CORS Error detected. Check backend CORS config.");
+  }
+  if (error.message.includes("poll")) {
+    console.error("   → Polling error detected. Backend may be unreachable.");
+  }
+});
+
+socket.on("error", (error) => {
+  console.error(`❌ [Socket.IO] Error:`, error);
 });
 
 export default socket;

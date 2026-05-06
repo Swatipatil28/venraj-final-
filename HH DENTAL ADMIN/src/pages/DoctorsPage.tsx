@@ -22,7 +22,8 @@ import FloatingInput, { FloatingSelect, FloatingTextArea } from '../components/F
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useSearchStore } from '../store/useSearchStore';
 import { useToast } from '../components/Toast';
-import { socket } from '../utils/socket';
+import { useRealtimeCollection } from '../hooks/useRealtimeCollection';
+import { useFetchGuard } from '../hooks/useFetchGuard';
 
 const SPECIALIZATIONS: Specialization[] = [
   'Prosthodontist',
@@ -40,9 +41,11 @@ const SPECIALIZATIONS: Specialization[] = [
 export default function DoctorsPage() {
   const { t } = useLanguageStore();
   const { showToast } = useToast();
-  const [doctors, setDoctors] = useState<DoctorDTO[]>([]);
+  const { data: doctors, loading } = useRealtimeCollection<DoctorDTO>(DoctorService.getAll, {
+    eventName: 'doctorUpdated',
+    initialData: [],
+  });
   const [clinics, setClinics] = useState<ClinicDTO[]>([]);
-  const [loading, setLoading] = useState(true);
   const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
   const [filterSpec, setFilterSpec] = useState<Specialization | 'All'>('All');
   const [filterState, setFilterState] = useState<'All' | 'Telangana' | 'Andhra Pradesh'>('All');
@@ -60,35 +63,22 @@ export default function DoctorsPage() {
     state: 'Telangana',
   });
 
+  const { guardedFetch } = useFetchGuard();
+
   useEffect(() => {
-    fetchData();
-
-    // Socket.io for real-time updates
-    socket.on('doctorUpdated', (data: DoctorDTO[]) => {
-      setDoctors(data);
-    });
-
-    return () => {
-      socket.off('doctorUpdated');
+    const fetchClinics = async () => {
+      try {
+        const cRes = await ClinicService.getAll();
+        setClinics(cRes);
+      } catch (error) {
+        console.error('Failed to fetch clinics:', error);
+        showToast(error instanceof Error ? error.message : 'Failed to fetch doctors', 'error');
+      }
     };
-  }, []);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [dRes, cRes] = await Promise.all([
-        DoctorService.getAll(),
-        ClinicService.getAll()
-      ]);
-      setDoctors(dRes);
-      setClinics(cRes);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-      showToast(error instanceof Error ? error.message : 'Failed to fetch doctors', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    void guardedFetch(fetchClinics);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpenModal = (doc?: DoctorDTO) => {
     if (doc) {
@@ -144,11 +134,11 @@ export default function DoctorsPage() {
     }
   };
 
-  const filteredDoctors = doctors.filter((doc) => {
+  const filteredDoctors = (Array.isArray(doctors) ? doctors : []).filter((doc) => {
     const query = globalSearchQuery.toLowerCase();
     const matchesSearch =
-      doc.name.toLowerCase().includes(query) ||
-      doc.qualifications.toLowerCase().includes(query);
+      (doc.name || '').toLowerCase().includes(query) ||
+      (doc.qualifications || '').toLowerCase().includes(query);
     const specs = Array.isArray(doc.specialization) ? doc.specialization : [doc.specialization as unknown as string];
     const matchesSpec = filterSpec === 'All' || specs.includes(filterSpec);
     const matchesState = filterState === 'All' || doc.state === filterState;

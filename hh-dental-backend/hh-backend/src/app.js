@@ -4,8 +4,10 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 
 const { notFound, errorHandler } = require("./middlewares/error.middleware");
+const { getAllowedOrigins, isAllowedOrigin } = require("./utils/socket");
 
 // Route files
 const clinicRoutes      = require("./routes/clinic.routes");
@@ -24,19 +26,27 @@ app.use(helmet({
 }));
 
 // ── CORS ──────────────────────────────────────────────────
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    if (process.env.NODE_ENV === "development") {
+      return callback(null, true);
+    }
+
+    if (isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
 
 // ── Rate Limiting ─────────────────────────────────────────
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.NODE_ENV === "development" ? 1000 : 100,
   message: { success: false, message: "Too many requests. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,
@@ -44,13 +54,13 @@ const globalLimiter = rateLimit({
 
 const appointmentLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10,
+  max: 50,
   message: { success: false, message: "Too many appointment requests. Please try again in an hour." },
 });
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 50,
   message: { success: false, message: "Too many login attempts. Please try again later." },
 });
 
@@ -61,7 +71,6 @@ app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // ── Static Files ──────────────────────────────────────────
-const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use((req, _res, next) => {

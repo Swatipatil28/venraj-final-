@@ -1,37 +1,51 @@
 import { io, Socket } from "socket.io-client";
 
-// In production, this should come from an environment variable
-const VITE_API_URL = import.meta.env.VITE_API_URL;
-const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+const SOCKET_URL =
+  API_URL ||
+  (API_BASE_URL ? API_BASE_URL.replace(/\/api\/?$/, "") : "") ||
+  (import.meta.env.PROD ? "https://venraj-final.onrender.com" : "http://localhost:5001");
 
-// Try VITE_API_URL, then VITE_API_BASE_URL (minus /api), 
-// then a production fallback, finally localhost if in dev
-const SOCKET_URL = VITE_API_URL || 
-                   (VITE_API_BASE_URL ? VITE_API_BASE_URL.replace(/\/api$/, "") : null) || 
-                   (import.meta.env.PROD ? "https://venraj-final.onrender.com" : "http://localhost:5001");
+console.log("[Socket.IO] Connecting to:", SOCKET_URL);
 
 class SocketService {
   private static instance: SocketService;
   public socket: Socket;
 
   private constructor() {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
     this.socket = io(SOCKET_URL, {
-      transports: ["websocket"],
+      transports: ["polling", "websocket"],
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000
     });
 
     this.socket.on("connect", () => {
-      console.log("%c[Socket.IO] Connected to server", "color: #2E86AB; font-weight: bold;");
+      console.log(
+        `✅ [Socket.IO] Connected! ID: ${this.socket.id} | Transport: ${
+          (this.socket.io.engine.transport as any).name
+        }`
+      );
     });
 
-    this.socket.on("disconnect", () => {
-      console.log("%c[Socket.IO] Disconnected from server", "color: #e11d48; font-weight: bold;");
+    this.socket.on("disconnect", (reason) => {
+      console.warn(`⚠️  [Socket.IO] Disconnected - Reason: ${reason}`);
     });
 
-    this.socket.on("connect_error", (error) => {
-      console.error("[Socket.IO] Connection Error:", error);
+    this.socket.on("connect_error", (error: any) => {
+      console.error(`❌ [Socket.IO] Connection Error:`, error);
+      if (error.message?.includes("CORS")) {
+        console.error("   → CORS Error detected. Check backend CORS config.");
+      }
+      if (error.message?.includes("poll")) {
+        console.error("   → Polling error detected. Backend may be unreachable.");
+      }
+    });
+
+    this.socket.on("error", (error) => {
+      console.error(`❌ [Socket.IO] Error:`, error);
     });
   }
 

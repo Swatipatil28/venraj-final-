@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { getServices } from "../services/api.service";
-import { useApiResource } from "../hooks/useApiResource";
+import { useRealtimeResource } from "../hooks/useRealtimeResource";
 import { useLanguage } from "../context/LanguageContext";
 import ServiceCard from "./ServiceCard";
 import SectionIntro from "./SectionIntro";
@@ -8,8 +8,11 @@ import { CardSkeleton } from "./LoadingSkeleton";
 
 export default function Services() {
   const { t } = useLanguage();
-  const { data, loading } = useApiResource(getServices, [], []);
-  const featured = data.slice(0, 6);
+  const { data, loading } = useRealtimeResource(getServices, {
+    eventName: "serviceUpdated",
+    initialData: [],
+  });
+  const featured = Array.isArray(data) ? data.slice(0, 6) : [];
 
   return (
     <section className="section-pad">

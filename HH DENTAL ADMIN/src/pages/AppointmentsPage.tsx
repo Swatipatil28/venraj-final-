@@ -69,6 +69,16 @@ export default function AppointmentsPage() {
   }, []);
 
   useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      if (!socket.connected) {
+        void refreshAppointments();
+      }
+    }, 30000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
     if (selectedAppointment?.phone) {
       setPatientHistory(
         appointments.filter(
@@ -119,22 +129,28 @@ export default function AppointmentsPage() {
 
   // Real-time Socket.io integration
   useEffect(() => {
-    socket.on('appointmentUpdated', (data: AppointmentDTO[]) => {
-      setAppointments(data);
-      // Also update selected appointment if open
+    const handleAppointmentUpdated = (updatedAppointments: AppointmentDTO[]) => {
+      if (!Array.isArray(updatedAppointments)) {
+        return;
+      }
+      setAppointments(updatedAppointments);
       setSelectedAppointment((prev) => {
-        if (!prev) return null;
-        return data.find((a) => a._id === prev._id) ?? prev;
+        if (!prev?._id) return prev;
+        return updatedAppointments.find((a) => a._id === prev._id) ?? prev;
       });
-    });
+    };
 
-    socket.on('newAppointment', (data: AppointmentDTO) => {
-      showToast(`New appointment from ${data.patientName}!`, 'info');
-    });
+    const handleNewAppointment = (data: AppointmentDTO) => {
+      setAppointments((prev) => [data, ...prev]);
+      showToast(`New appointment from ${data?.patientName || 'a patient'}!`, 'info');
+    };
+
+    socket.on('appointmentUpdated', handleAppointmentUpdated);
+    socket.on('newAppointment', handleNewAppointment);
 
     return () => {
-      socket.off('appointmentUpdated');
-      socket.off('newAppointment');
+      socket.off('appointmentUpdated', handleAppointmentUpdated);
+      socket.off('newAppointment', handleNewAppointment);
     };
   }, [showToast]);
 
@@ -142,10 +158,10 @@ export default function AppointmentsPage() {
   const { globalSearchQuery, setGlobalSearchQuery } = useSearchStore();
 
   const filteredAppointments = useMemo(() => {
-    return appointments.filter((appointment) => {
+    return (Array.isArray(appointments) ? appointments : []).filter((appointment) => {
       const query = globalSearchQuery.toLowerCase();
       const matchesSearch =
-        appointment.patientName.toLowerCase().includes(query) ||
+        (appointment.patientName || '').toLowerCase().includes(query) ||
         appointment.phone.includes(query) ||
         (appointment.clinicName || '').toLowerCase().includes(query) ||
         (appointment.serviceName || '').toLowerCase().includes(query);
