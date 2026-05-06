@@ -30,22 +30,22 @@ export default function TestimonialsPage() {
 
   const { guardedFetch } = useFetchGuard();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await api.get('/admin/testimonials');
-        setTestimonials(Array.isArray(data) ? data : []);
-      } catch (error) {
-        showToast('Failed to fetch testimonials', 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await api.get('/admin/testimonials');
+      setTestimonials(Array.isArray(data) ? data : []);
+    } catch (error) {
+      showToast('Failed to fetch testimonials', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
 
+  useEffect(() => {
     void guardedFetch(fetchData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchData]);
 
   const handleOpenModal = (item?: any) => {
     if (item) {
