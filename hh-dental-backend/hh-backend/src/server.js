@@ -14,14 +14,13 @@ const startServer = async () => {
 
   initSocket(server);
 
-  server.listen(5001, () => {
-    console.log("✅ Server running on http://localhost:5001");
+  server.listen(PORT, HOST, () => {
+    console.log(`✅ Server running on port ${PORT}`);
   });
 
   server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {
-      console.error(`Port 5001 is already in use. Please stop the existing process.`);
-      // Handle port conflict gracefully (log error only, no process.exit)
+      console.error(`Port ${PORT} is already in use.`);
     } else {
       console.error("Server error:", err.message);
     }
