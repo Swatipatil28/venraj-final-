@@ -24,11 +24,14 @@ export default defineConfig(({mode}) => {
       chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            router: ['react-router-dom'],
-            socket: ['socket.io-client'],
-            http: ['axios'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor';
+              if (id.includes('react-router')) return 'router';
+              if (id.includes('socket.io')) return 'socket';
+              if (id.includes('axios')) return 'http';
+              return 'vendor-libs';
+            }
           },
         },
       },
