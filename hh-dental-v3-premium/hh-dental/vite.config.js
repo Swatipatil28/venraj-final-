@@ -25,15 +25,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'vendor';
-            if (id.includes('react-router')) return 'router';
-            if (id.includes('socket.io')) return 'socket';
-            if (id.includes('axios')) return 'http';
-            return 'vendor-libs';
-          }
-        },
+        // Removed manualChunks to fix runtime React undefined error
       },
     },
   },
