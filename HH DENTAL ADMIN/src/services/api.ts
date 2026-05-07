@@ -6,14 +6,12 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+export const API_URL = import.meta.env.VITE_API_URL || "https://venraj-final.onrender.com";
+const API_BASE_URL = `${API_URL}/api`;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: 30000,
 });
 
 const pendingRequests = new Map<string, Promise<unknown>>();
@@ -42,10 +40,25 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response.data?.data ?? response.data,
-  (error) => {
-    if (error.response?.status === 401) {
+  async (error) => {
+    const { config, response } = error;
+
+    if (response?.status === 401) {
       useAuthStore.getState().logout();
       window.location.href = '/login';
+      return Promise.reject(error);
+    }
+
+    // Retry mechanism for Render cold starts
+    if (!config || !config.retry) config.retry = 0;
+    const shouldRetry = !response || response.status === 503 || response.status === 504 || response.status === 502;
+    
+    if (shouldRetry && config.retry < 3) {
+      config.retry += 1;
+      const delay = config.retry * 2000;
+      console.log(`Retrying API call (${config.retry}/3) in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return api(config);
     }
 
     if (error.response?.status === 429) {
@@ -53,20 +66,16 @@ api.interceptors.response.use(
       return Promise.reject(new Error('Too many requests. Please try again later.'));
     }
 
-    if (error.code === 'ECONNABORTED') {
-      return Promise.reject(new Error('Request timeout. Please try again.'));
-    }
-
+    let message = "An unexpected error occurred";
     if (error.message === 'Network Error' || !error.response) {
-      return Promise.reject(new Error('Network Error. Please ensure you are connected to the internet and the server is reachable.'));
+      message = 'Backend server is sleeping or unreachable. Please wait...';
+    } else if (error.code === 'ECONNABORTED') {
+      message = 'Request timeout. The server might be waking up.';
+    } else {
+      message = error.response?.data?.message || error.response?.data?.error || `Server error (${error.response?.status || 500})`;
     }
 
-    const serverMessage =
-      error.response?.data?.message ||
-      error.response?.data?.error ||
-      `Server error (${error.response?.status || 500})`;
-
-    return Promise.reject(new Error(serverMessage));
+    return Promise.reject(new Error(message));
   }
 );
 

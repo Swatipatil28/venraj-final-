@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const SOCKET_URL =
   API_URL ||
   (API_BASE_URL ? API_BASE_URL.replace(/\/api\/?$/, "") : "") ||
-  "http://localhost:5001";
+  import.meta.env.VITE_API_URL || "https://venraj-final.onrender.com";
 
 const BACKEND_URL = SOCKET_URL;
 

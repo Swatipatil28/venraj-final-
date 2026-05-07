@@ -25,20 +25,23 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// ── CORS ──────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://venrajfrontend.vercel.app",
+  "https://venrajadmin.vercel.app"
+];
+
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function(origin, callback) {
     if (!origin) return callback(null, true);
 
-    if (process.env.NODE_ENV === "development") {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    if (isAllowedOrigin(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("Not allowed by CORS"));
+    return callback(new Error("CORS blocked"));
   },
   credentials: true
 }));

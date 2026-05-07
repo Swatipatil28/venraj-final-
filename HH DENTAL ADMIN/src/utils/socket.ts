@@ -1,22 +1,17 @@
 import { io, Socket } from "socket.io-client";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_URL = import.meta.env.VITE_API_URL;
-const SOCKET_URL =
-  API_URL ||
-  (API_BASE_URL ? API_BASE_URL.replace(/\/api\/?$/, "") : "") ||
-  (import.meta.env.PROD ? "https://venraj-final.onrender.com" : "http://localhost:5001");
+import { API_URL } from "../services/api";
 
-console.log("[Socket.IO] Connecting to:", SOCKET_URL);
+console.log("[Socket.IO] Connecting to:", API_URL);
 
 class SocketService {
   private static instance: SocketService;
   public socket: Socket;
 
   private constructor() {
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001';
-    this.socket = io(SOCKET_URL, {
+    this.socket = io(API_URL, {
       transports: ["polling", "websocket"],
+      withCredentials: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000

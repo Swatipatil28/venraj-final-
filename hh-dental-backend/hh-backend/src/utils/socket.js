@@ -40,9 +40,18 @@ const isAllowedOrigin = (origin) => {
 };
 
 const initSocket = (server) => {
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3000",
+    "https://venrajfrontend.vercel.app",
+    "https://venrajadmin.vercel.app"
+  ];
+
   io = new Server(server, {
     cors: {
-      origin: true,
+      origin: allowedOrigins,
+      methods: ["GET", "POST"],
       credentials: true
     },
     transports: ["polling", "websocket"],
