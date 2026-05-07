@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useSearchStore } from '../store/useSearchStore';
+import logo from '../assets/logo.png';
 
 export default function Topbar({ toggleMobileMenu }: { toggleMobileMenu?: () => void }) {
   const user = useAuthStore((state) => state.user);
@@ -16,13 +17,20 @@ export default function Topbar({ toggleMobileMenu }: { toggleMobileMenu?: () => 
 
   return (
     <header className="h-16 md:h-20 bg-bg-main/80 backdrop-blur-md border-b border-border-subtle sticky top-0 z-30 px-4 md:px-8 flex items-center transition-colors duration-300">
-      <div className="flex items-center gap-4 min-w-[200px]">
+      <div className="flex items-center gap-4 min-w-[240px]">
         <button onClick={toggleMobileMenu} className="md:hidden text-text-primary p-2 -ml-2 rounded-lg hover:bg-text-primary/5">
           <Menu className="w-6 h-6" />
         </button>
-        <div className="hidden md:flex items-center gap-2">
-          <h1 className="text-xl font-bold tracking-tighter text-text-primary">H&H <span className="text-accent italic">DENTAL</span></h1>
-          <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-1">Admin Prestige</span>
+        <div className="hidden md:flex items-center gap-3">
+          <img src={logo} alt="H&H Icon" className="w-10 h-10 object-contain shrink-0" />
+          <div className="flex flex-col border-l border-border-subtle pl-3">
+            <h1 className="text-lg font-black tracking-tighter text-text-primary leading-none">
+              H&H <span className="text-accent italic">DENTAL</span>
+            </h1>
+            <p className="text-[8px] text-text-muted uppercase font-black tracking-widest mt-1">
+              Admin Prestige
+            </p>
+          </div>
         </div>
       </div>
 
