@@ -7,12 +7,12 @@ export default function HeroSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden bg-[#0F172A] min-h-[60vh] sm:min-h-[80vh] lg:min-h-[90vh] flex items-center">
+    <section className="relative overflow-hidden bg-[#0F172A] min-h-[70vh] sm:min-h-[85vh] lg:min-h-[95vh] flex items-center pt-20">
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: "linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.4))",
+            background: "linear-gradient(to right, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.45), transparent)",
           }}
         />
         <img
@@ -22,37 +22,37 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="container-shell relative z-20 px-6 py-12 sm:px-10 sm:py-20 lg:py-32">
+      <div className="container-shell relative z-20 px-6 py-20 sm:px-12 lg:py-32">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="max-w-3xl text-center md:text-left"
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-4xl text-center md:text-left"
         >
-          <p className="eyebrow mb-8 inline-block rounded-full bg-[var(--primary)]/20 border border-[var(--primary)]/30 px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white backdrop-blur-md sm:text-sm">
+          <p className="mb-6 inline-block rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 px-6 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-white backdrop-blur-md">
             {t("home.heroEyebrow")}
           </p>
-          <h1 className="mb-8 text-4xl font-black leading-[1.1] text-white sm:text-6xl md:text-7xl lg:text-8xl tracking-tight">
+          <h1 className="mb-8 text-5xl font-black leading-[1.05] text-white sm:text-7xl md:text-8xl lg:text-9xl tracking-tightest">
             {t("home.heroTitle")}
           </h1>
-          <p className="mb-12 mx-auto md:mx-0 max-w-xl text-lg text-[#CBD5F5] sm:text-xl font-medium leading-relaxed">
+          <p className="mb-12 mx-auto md:mx-0 max-w-2xl text-lg text-slate-300 sm:text-xl md:text-2xl font-medium leading-relaxed">
             {t("home.heroBody")}
           </p>
 
-          <div className="flex flex-col gap-5 sm:flex-row sm:justify-center md:justify-start">
-            <Link to="/book-appointment" className="cta-primary px-10 py-5 text-lg shadow-primary-md hover:shadow-primary-lg transform hover:-translate-y-1">
+          <div className="flex flex-col gap-6 sm:flex-row sm:justify-center md:justify-start">
+            <Link to="/book-appointment" className="cta-primary px-12 py-5 text-lg font-black tracking-wide shadow-primary-lg hover:shadow-primary-xl transform hover:-translate-y-1">
               {t("common.bookNow")}
             </Link>
-            <Link to="/services" className="rounded-xl border-2 border-white/30 bg-white/5 px-10 py-5 text-lg font-bold text-white transition-all hover:bg-white/10 hover:border-white/50 backdrop-blur-md w-full sm:w-auto text-center">
+            <Link to="/services" className="rounded-2xl border-2 border-white/20 bg-white/5 px-12 py-5 text-lg font-black text-white transition-all hover:bg-white/10 hover:border-white/40 backdrop-blur-md w-full sm:w-auto text-center">
               {t("home.heroSecondary")}
             </Link>
           </div>
           
-          <div className="mt-20 sm:mt-24 grid grid-cols-2 sm:grid-cols-3 gap-8 border-t border-white/10 pt-10">
+          <div className="mt-20 sm:mt-32 grid grid-cols-2 sm:grid-cols-3 gap-12 border-t border-white/10 pt-12">
             {SITE_STATS.slice(0, 3).map((item, idx) => (
               <div key={item.label} className={idx === 2 ? "col-span-2 sm:col-span-1" : ""}>
-                <p className="text-3xl sm:text-4xl font-black text-[var(--primary)]">{item.value}</p>
-                <p className="mt-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-[#94A3B8]">{item.label}</p>
+                <p className="text-4xl sm:text-5xl font-black text-[var(--primary)] tracking-tighter">{item.value}</p>
+                <p className="mt-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-400">{item.label}</p>
               </div>
             ))}
           </div>

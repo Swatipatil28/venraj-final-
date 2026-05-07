@@ -12,12 +12,16 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-4 lg:gap-8">
           <div className="col-span-1 lg:col-span-2 space-y-8">
             <Link to="/" className="flex items-center gap-4 group">
-              <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-white border-2 border-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
-                <img src={logo} alt="H&H Dental Logo" className="h-full w-full object-contain" />
+              <div className="relative h-16 w-16 sm:h-20 sm:w-20 transition-transform duration-300 group-hover:scale-105">
+                <img src={logo} alt="H&H Dental Icon" className="h-full w-full object-contain" />
               </div>
-              <div>
-                <p className="font-['Cinzel'] font-black text-xl tracking-[0.1em] leading-none">H&H DENTAL</p>
-                <p className="text-[10px] uppercase tracking-widest text-[var(--primary)] font-bold mt-1">Excellence in every smile</p>
+              <div className="flex flex-col border-l border-white/10 pl-4">
+                <h2 className="font-['Cinzel'] font-black text-2xl tracking-tighter text-white leading-none">
+                  H&H <span className="text-[var(--primary)]">DENTAL</span>
+                </h2>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  Excellence in every smile
+                </p>
               </div>
             </Link>
             <p className="max-w-md text-lg leading-relaxed text-slate-400 font-medium">

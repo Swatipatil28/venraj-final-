@@ -73,15 +73,27 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
       <div className="p-4 md:p-6 border-b border-border-subtle">
         <div className="flex items-center gap-3">
           <div className={cn(
-            "rounded-xl overflow-hidden bg-white border border-border-subtle transition-all duration-300",
-            isCollapsed ? "w-10 h-10 mx-auto" : "w-12 h-12"
+            "overflow-hidden transition-all duration-500 transform shrink-0",
+            isCollapsed ? "h-10 w-10" : "h-12 w-12"
           )}>
-            <img src={logo} alt="H&H Logo" className="w-full h-full object-contain" />
+            <img 
+              src={logo} 
+              alt="H&H Icon" 
+              className="w-full h-full object-contain" 
+            />
           </div>
           {!isCollapsed && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h1 className="text-lg font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
-              <p className="text-[9px] text-text-muted uppercase tracking-widest font-semibold">Admin Prestige</p>
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }} 
+              animate={{ opacity: 1, x: 0 }}
+              className="flex flex-col border-l border-border-subtle pl-3"
+            >
+              <h1 className="text-lg font-black tracking-tighter text-accent leading-none">
+                H&H <span className="text-text-primary font-light">DENTAL</span>
+              </h1>
+              <p className="text-[8px] text-text-muted uppercase font-black tracking-widest mt-1">
+                Admin Prestige
+              </p>
             </motion.div>
           )}
         </div>
