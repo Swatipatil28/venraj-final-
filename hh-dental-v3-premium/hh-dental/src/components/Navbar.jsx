@@ -124,7 +124,7 @@ export default function Navbar() {
             </div>
             <Link 
               to="/book-appointment" 
-              className="cta-primary hidden md:inline-flex px-8 py-3.5 text-sm font-black shadow-primary-md hover:shadow-primary-lg active:scale-95 transition-all"
+              className="cta-primary hidden lg:inline-flex px-8 py-3.5 text-sm font-black shadow-primary-md hover:shadow-primary-lg active:scale-95 transition-all"
             >
               {t("nav.book")}
             </Link>
