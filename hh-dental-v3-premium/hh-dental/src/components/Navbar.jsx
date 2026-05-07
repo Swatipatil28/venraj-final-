@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
+import logo from "../assets/logo.png";
+
 function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
 
@@ -61,16 +63,14 @@ export default function Navbar() {
       <div className="container-shell">
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-3 sm:gap-4 group" onClick={() => setOpen(false)}>
-            <div
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 shadow-sm"
-              style={{
-                background: "white",
-                border: `2px solid var(--primary)`,
-              }}
-            >
-              <span className="font-['Cinzel'] font-bold text-xs sm:text-base text-[var(--primary)]">H&H</span>
+            <div className="relative h-12 w-12 sm:h-14 sm:w-14 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-110">
+              <img 
+                src={logo} 
+                alt="H&H Dental Logo" 
+                className="h-full w-full object-contain"
+              />
             </div>
-            <div>
+            <div className="hidden sm:block">
               <p className="font-['Cinzel'] font-black text-sm sm:text-xl tracking-[0.1em] text-[var(--text)] leading-none">H&H DENTAL</p>
               <p className="text-[8px] sm:text-[10px] uppercase tracking-widest text-[var(--primary)] font-bold mt-1">Excellence in every smile</p>
             </div>

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 
+import logo from "../assets/logo.png";
+
 export default function Footer() {
   const { t } = useLanguage();
 
@@ -10,8 +12,8 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-4 lg:gap-8">
           <div className="col-span-1 lg:col-span-2 space-y-8">
             <Link to="/" className="flex items-center gap-4 group">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
-                <span className="font-['Cinzel'] font-bold text-base text-[var(--primary)]">H&H</span>
+              <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-white border-2 border-[var(--primary)] transition-transform duration-300 group-hover:scale-110">
+                <img src={logo} alt="H&H Dental Logo" className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="font-['Cinzel'] font-black text-xl tracking-[0.1em] leading-none">H&H DENTAL</p>

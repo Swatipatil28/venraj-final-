@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import logo from '../assets/logo.png';
 import { 
   LayoutDashboard, 
   CalendarCheck, 
@@ -69,20 +70,21 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }: { mobileM
         )}
       >
       {/* Brand */}
-      <div className="p-6 md:p-8 border-b border-border-subtle">
-        {!isCollapsed ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <h1 className="text-xl md:text-2xl font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
-            <p className="text-[9px] md:text-[10px] text-text-muted uppercase tracking-widest mt-1 font-semibold">Admin Prestige</p>
-          </motion.div>
-        ) : (
-          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center mx-auto">
-            <span className="text-bg-main font-bold text-xl">H</span>
+      <div className="p-4 md:p-6 border-b border-border-subtle">
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "rounded-xl overflow-hidden bg-white border border-border-subtle transition-all duration-300",
+            isCollapsed ? "w-10 h-10 mx-auto" : "w-12 h-12"
+          )}>
+            <img src={logo} alt="H&H Logo" className="w-full h-full object-contain" />
           </div>
-        )}
+          {!isCollapsed && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <h1 className="text-lg font-bold tracking-tighter text-accent">H&H <span className="text-text-primary font-light">DENTAL</span></h1>
+              <p className="text-[9px] text-text-muted uppercase tracking-widest font-semibold">Admin Prestige</p>
+            </motion.div>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}
