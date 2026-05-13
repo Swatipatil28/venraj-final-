@@ -48,30 +48,34 @@ const getServiceById = async (req, res, next) => {
   }
 };
 
+const { uploadBuffer } = require("../utils/cloudinary");
+
 const uploadServiceImage = async (req, res, next) => {
   try {
     if (!req.file) {
       return sendError(res, "Please upload an image file", 400);
     }
 
-    // Handle both Cloudinary URLs and local file paths
-    let imageUrl = req.file.path;
-    let publicId = req.file.filename;
-
-    // If it's a local file, construct the full URL
-    if (!imageUrl.startsWith("http")) {
-      imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    }
+    // Manually upload to Cloudinary using the buffer
+    console.log("Starting Cloudinary upload for file:", req.file.originalname);
+    const result = await uploadBuffer(req.file.buffer, {
+      folder: process.env.CLOUDINARY_FOLDER || "HH_DENTAL_PROJECT"
+    });
 
     return sendSuccess(
       res,
       {
-        url: imageUrl,
-        publicId: publicId,
+        url: result.secure_url,
+        publicId: result.public_id,
       },
       "Image uploaded successfully"
     );
   } catch (err) {
+    console.error("Cloudinary Manual Upload Error:", err);
+    // Specifically catch 403 to give better advice
+    if (err.http_code === 403) {
+      return sendError(res, "Cloudinary Access Denied (403). Please verify your API Secret and account status.", 403);
+    }
     next(err);
   }
 };

@@ -1,6 +1,5 @@
 const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const { cloudinary, hasCloudinaryConfig } = require("../utils/cloudinary");
+const path = require("path");
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
@@ -10,29 +9,8 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-let storage;
-
-if (hasCloudinaryConfig()) {
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: process.env.CLOUDINARY_FOLDER || "hh-dental",
-      allowed_formats: ["jpg", "png", "jpeg", "webp"],
-    },
-  });
-} else {
-  // Fallback to local storage if Cloudinary not configured
-  const path = require("path");
-  storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, "../../uploads"));
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
-    },
-  });
-}
+// We use memory storage so we can manually upload to Cloudinary in the controller
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,

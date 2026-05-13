@@ -40,10 +40,10 @@ const uploadBuffer = async (fileBuffer, options = {}) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: process.env.CLOUDINARY_FOLDER || "hh-dental/services",
+        folder: process.env.CLOUDINARY_FOLDER || "HH_DENTAL_PROJECT",
         resource_type: "image",
         overwrite: true,
-        invalidate: true,
+        upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
         ...options,
       },
       (error, result) => {
