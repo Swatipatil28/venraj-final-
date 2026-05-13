@@ -18,7 +18,6 @@ if (hasCloudinaryConfig()) {
     params: {
       folder: process.env.CLOUDINARY_FOLDER || "hh-dental",
       allowed_formats: ["jpg", "png", "jpeg", "webp"],
-      transformation: [{ width: 1000, height: 1000, crop: "limit" }],
     },
   });
 } else {
