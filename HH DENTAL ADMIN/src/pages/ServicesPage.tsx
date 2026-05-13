@@ -49,8 +49,9 @@ export default function ServicesPage() {
 
     try {
       setUploading(true);
-      const imageUrl = await UploadService.uploadImage(file);
-      setFormData(prev => ({ ...prev, image: imageUrl }));
+      const uploadedData = await UploadService.uploadImage(file);
+      // uploadedData is { url: string, publicId?: string }
+      setFormData(prev => ({ ...prev, image: uploadedData.url }));
       showToast('Image uploaded successfully');
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Upload failed', 'error');
