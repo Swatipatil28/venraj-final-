@@ -77,7 +77,7 @@ export default function HomePage() {
               <p className="mb-6 inline-block rounded-full bg-[var(--primary)]/20 px-6 py-2 text-sm font-bold uppercase tracking-[0.2em] text-[var(--primary)] border border-[var(--primary)]/30">
                 Ready to transform your smile?
               </p>
-              <h2 className="mx-auto max-w-4xl text-4xl font-black text-white md:text-7xl leading-[1.1]">
+              <h2 className="mx-auto max-w-4xl text-3xl font-black text-white sm:text-5xl md:text-7xl leading-[1.15] sm:leading-[1.1]">
                 {t("home.ctaTitle")}
               </h2>
               <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-slate-400 font-medium">

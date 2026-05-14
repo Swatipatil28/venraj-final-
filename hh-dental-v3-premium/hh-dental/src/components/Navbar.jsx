@@ -71,18 +71,18 @@ export default function Navbar() {
             className="flex items-center justify-start gap-4 group transition-transform duration-300 hover:scale-[1.02]" 
             onClick={() => setOpen(false)}
           >
-            <div className="relative h-[50px] w-[50px] sm:h-[60px] sm:w-[60px] lg:h-[70px] lg:w-[70px] shrink-0">
+            <div className="relative h-[40px] w-[40px] xs:h-[50px] xs:w-[50px] sm:h-[60px] sm:w-[60px] lg:h-[70px] lg:w-[70px] shrink-0">
               <img 
                 src={logo} 
                 alt="H&H Dental Icon" 
                 className="h-full w-full object-contain"
               />
             </div>
-            <div className="flex flex-col justify-center border-l border-slate-200 pl-4">
-              <h1 className="font-['Cinzel'] font-black text-xl sm:text-2xl lg:text-3xl tracking-tighter text-[#0F172A] leading-none">
+            <div className="flex flex-col justify-center border-l border-slate-200 pl-3 sm:pl-4">
+              <h1 className="font-['Cinzel'] font-black text-lg sm:text-2xl lg:text-3xl tracking-tighter text-[#0F172A] leading-none">
                 H&H <span className="text-[var(--primary)]">DENTAL</span>
               </h1>
-              <p className="mt-1 text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+              <p className="mt-1 text-[7px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500">
                 Excellence in every smile
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function Navbar() {
           </nav>
 
           {/* Language & CTA - Right Aligned */}
-          <div className="flex items-center justify-end gap-4 sm:gap-8">
+          <div className="flex items-center justify-end gap-3 sm:gap-8">
             <div className="hidden sm:block">
               <LanguageToggle />
             </div>
@@ -130,10 +130,10 @@ export default function Navbar() {
             </Link>
             
             {/* Mobile Actions */}
-            <div className="flex items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-2 sm:gap-3 lg:hidden">
               <Link 
                 to="/book-appointment" 
-                className="cta-primary px-4 py-2 text-[10px] font-black uppercase tracking-wider"
+                className="cta-primary hidden sm:inline-flex px-4 py-2 text-[10px] font-black uppercase tracking-wider"
               >
                 {t("nav.book")}
               </Link>

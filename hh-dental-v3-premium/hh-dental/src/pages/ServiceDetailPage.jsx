@@ -52,12 +52,12 @@ export default function ServiceDetailPage() {
           />
           <div className="hero-overlay absolute inset-0" />
         </div>
-        <div className="container-shell relative flex min-h-[72vh] items-end py-16">
-          <div className="max-w-3xl pb-6">
-            <p className="eyebrow mb-4 capitalize">{service.category}</p>
+        <div className="container-shell relative flex min-h-[60vh] sm:min-h-[72vh] items-end py-10 sm:py-16">
+          <div className="max-w-3xl pb-4 sm:pb-6">
+            <p className="eyebrow mb-2 sm:mb-4 capitalize">{service.category}</p>
             <h1 className="luxury-title">{service.title || service.name}</h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{service.description}</p>
-            <Link to="/book-appointment" className="cta-primary mt-8 inline-flex">
+            <p className="mt-4 sm:mt-6 max-w-2xl text-base sm:text-lg leading-relaxed sm:leading-8 text-slate-700 sm:text-[var(--muted)]">{service.description}</p>
+            <Link to="/book-appointment" className="cta-primary mt-6 sm:mt-8 inline-flex px-6 py-3 text-sm sm:text-base">
               {t("common.bookNow")}
             </Link>
           </div>
